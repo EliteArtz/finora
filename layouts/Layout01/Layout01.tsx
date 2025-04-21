@@ -20,7 +20,7 @@ const Style_Layout01 = styled.View`
   flex-direction: column;
   ${({ theme }) => css`
     gap: ${theme.size.l.px};
-    padding: ${theme.size.l.px};
+    padding-bottom: 0;
   `}
 `
 
@@ -28,6 +28,10 @@ const Style_TopActions = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  ${({ theme }) => css`
+    padding: ${theme.size.l.px};
+    padding-bottom: 0;
+  `}
 `
 
 const Layout01 = ({ children }: { children: React.ReactNode }) => {
@@ -39,7 +43,6 @@ const Layout01 = ({ children }: { children: React.ReactNode }) => {
     <Style_SafeView
       style={{
         paddingTop: insets.top,
-        paddingBottom: insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
       }}

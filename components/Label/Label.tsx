@@ -18,11 +18,10 @@ type StyleLabelProps = {
 };
 
 const Style_Label = styled.Text<StyleLabelProps>`
-  font-family: "Arial Rounded MT Bold";
   ${({ theme, $color, $size, $weight, $align }) => css`
     color: ${theme['color'][$color]};
     font-size: ${theme.size[$size].px};
-    font-weight: ${$weight};
+    font-family: ${$weight === 'normal' ? 'Inter_400Regular' : 'Inter_700Bold'};
     text-align: ${$align};
   `}
 `;

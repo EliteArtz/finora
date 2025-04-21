@@ -17,6 +17,11 @@ type Style_ButtonProps = {
   $size: NonNullable<ButtonProps['padding']>;
 }
 
+const Style_ButtonContainer = styled.View`
+  border-radius: 999px;
+  overflow: hidden;
+`
+
 const Style_Button = styled.Pressable<Style_ButtonProps>`
   border-radius: 999px;
   ${({ theme, $type, $padding, $size }) => css`
@@ -29,18 +34,25 @@ const Style_Button = styled.Pressable<Style_ButtonProps>`
 
 const Button = ({
   children,
-  type='default',
-  padding='m',
-  size='xl',
+  type = 'default',
+  padding = 'm',
+  size = 'xl',
   ...rest
 }: ButtonProps) => {
   return (
-    <Style_Button
-      $type={type}
-      $padding={padding}
-      $size={size}
-      {...rest}
-    >{children}</Style_Button>
+    <Style_ButtonContainer>
+      <Style_Button
+        $type={type}
+        $padding={padding}
+        $size={size}
+        android_ripple={{
+          color: 'rgba(0,0,0,0.2)',
+          radius: 100,
+          borderless: true
+        }}
+        {...rest}
+      >{children}</Style_Button>
+    </Style_ButtonContainer>
   )
 }
 

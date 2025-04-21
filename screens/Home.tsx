@@ -4,15 +4,21 @@ import Button from "../components/Button/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import styled, {css, useTheme} from "styled-components/native";
 import Label from "../components/Label/Label";
-import BaseCard from "../components/BaseCard/BaseCard";
 import TotalCard from "../components/TotalCard/TotalCard";
+import ExpensesCard from "../components/ExpensesCard/ExpensesCard";
+import theme from "../assets/style/theme";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 
 const Style_BottomAction = styled.View`
+  width: 100%;
+  position: absolute;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-top: auto;
+  ${({ theme }) => css`
+    bottom: ${theme.size.xl.px};
+  `}
 `
 
 const Style_CardContainer = styled.View`
@@ -22,30 +28,43 @@ const Style_CardContainer = styled.View`
   `}
 `
 
+const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
+  const insets = useSafeAreaInsets();
+  return {
+    contentContainerStyle: {
+      gap: theme.size.l.value * 16,
+      paddingBottom: insets.bottom,
+    }
+  };
+})`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-inline: ${theme.size.l.px};
+`
+
 const Home = () => {
   const theme = useTheme();
 
   return (
     <Layout01>
-      <TotalCard />
-      <Style_CardContainer>
-        <Label size="s" color="textSecondary">
-          Fixe Kosten
-        </Label>
-        <BaseCard>
-
-        </BaseCard>
-      </Style_CardContainer>
-      <Style_CardContainer>
-        <Label size="s" color="textSecondary">
-          Buchungen
-        </Label>
-        <BaseCard>
-
-        </BaseCard>
-      </Style_CardContainer>
+      <Style_ScrollView>
+        <TotalCard />
+        <Style_CardContainer>
+          <Label size="s" color="textSecondary">
+            Fixe Kosten
+          </Label>
+          <ExpensesCard type="fixed" />
+        </Style_CardContainer>
+        <Style_CardContainer>
+          <Label size="s" color="textSecondary">
+            Buchungen
+          </Label>
+          <ExpensesCard type="transaction" />
+        </Style_CardContainer>
+      </Style_ScrollView>
       <Style_BottomAction>
-        <Button type="primary" padding="l">
+        <Button type="primary" padding="l" onPress={() => alert("Edit")} >
           <FontAwesomeIcon
             color={theme.color.surface}
             size={theme.size.l.value * 16}
