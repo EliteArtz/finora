@@ -1,28 +1,17 @@
 import Button from '../Button/Button';
 import uuid from 'react-native-uuid';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Modal from '../Modal/Modal';
 import Label from '../Label/Label';
 import Input from '../Input/Input';
 import React, { useEffect, useState } from 'react';
-import styled, { css } from 'styled-components/native';
+import styled from 'styled-components/native';
 import { useMMKVObject } from 'react-native-mmkv';
 import { Expense } from '../../types/expenses.type';
 import { Picker as RNPicker } from '@react-native-picker/picker';
 import Picker from '../Picker/Picker';
+import RowView from '../RowView/RowView';
+import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 
-const Style_FontAwesomeIcon = styled(FontAwesomeIcon).attrs(({ theme }) => ({
-  color: theme.color.textPrimary,
-  size: theme.size.l.value * 16,
-}))``;
-
-const Style_RowView = styled.View`
-  flex-direction: row;
-  align-items: center;
-  ${({ theme }) => css`
-    gap: ${theme.size.m.px}
-  `}
-`;
 const Style_FullInput = styled(Input)`
   flex: 1;
 `;
@@ -69,7 +58,9 @@ const EntryButton = () => {
   return (
     <>
       <Button type="primary" padding="l" onPress={onPress}>
-        <Style_FontAwesomeIcon
+        <FontAwesomeIcon
+          color="textPrimary"
+          size="l"
           icon="pen"
         />
       </Button>
@@ -83,10 +74,10 @@ const EntryButton = () => {
           <RNPicker.Item label="Fixe Kosten" value="fixed" />
         </Picker>
         <Input placeholder="Beschreibung (optional)" value={description} onChangeText={setDescription} />
-        <Style_RowView>
+        <RowView>
           <Style_FullInput placeholder="Wert" keyboardType="decimal-pad" value={expense} onChangeText={setExpense} />
           <Label>€</Label>
-        </Style_RowView>
+        </RowView>
         <Button onPress={onSubmit} disabled={!expense}>
           <Label align="center">OK</Label>
         </Button>

@@ -1,10 +1,10 @@
-import React from "react";
-import styled, {css} from 'styled-components/native';
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {ParamListBase, useNavigation} from "@react-navigation/native";
-import Button from "../../components/Button/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {DrawerNavigationProp,} from "@react-navigation/drawer";
+import React from 'react';
+import styled, { css } from 'styled-components/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
+import Button from '../../components/Button/Button';
+import { DrawerNavigationProp, } from '@react-navigation/drawer';
+import FontAwesomeIcon from '../../components/FontAwesomeIcon/FontAwesomeIcon';
 
 const Style_SafeView = styled.View`
   display: flex;
@@ -22,7 +22,7 @@ const Style_Layout01 = styled.View`
     gap: ${theme.size.l.px};
     padding-bottom: 0;
   `}
-`
+`;
 
 const Style_TopActions = styled.View`
   display: flex;
@@ -32,12 +32,7 @@ const Style_TopActions = styled.View`
     padding: ${theme.size.l.px};
     padding-bottom: 0;
   `}
-`
-
-const Style_FontAwesomeIcon = styled(FontAwesomeIcon).attrs(({ theme }) => ({
-  color: theme.color.primary,
-  size: theme.size.m.value * 16
-}))``;
+`;
 
 const Layout01 = ({ children }: { children?: React.ReactNode }) => {
   const insets = useSafeAreaInsets();
@@ -54,10 +49,10 @@ const Layout01 = ({ children }: { children?: React.ReactNode }) => {
       <Style_Layout01>
         <Style_TopActions>
           <Button onPress={navigation.openDrawer}>
-            <Style_FontAwesomeIcon icon="bars" />
+            <FontAwesomeIcon color="primary" icon="bars" />
           </Button>
           <Button onPress={() => navigation.navigate('Settings')}>
-            <Style_FontAwesomeIcon icon="gear"/>
+            <FontAwesomeIcon color="primary" icon="gear" />
           </Button>
         </Style_TopActions>
         {children}

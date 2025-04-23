@@ -1,15 +1,11 @@
 import styled, {css} from "styled-components/native";
-import {ModalProps} from "react-native";
-
-const Style_Modal = styled.Modal`
-  background-color: rgba(0, 0, 0, 0.25);
-`
+import {Modal as RNModal, ModalProps} from "react-native";
 
 const Style_ModalPositioning = styled.View`
   display: flex;
   flex: 1;
   flex-direction: row;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.4);
   justify-content: center;
   align-items: center;
   ${({ theme }) => css`
@@ -29,13 +25,13 @@ const Style_ModalContainer = styled.View`
 
 const Modal = ({children, animationType='fade', transparent=true, ...rest}: ModalProps) => {
   return (
-    <Style_Modal animationType={animationType} transparent={transparent} {...rest}>
+    <RNModal animationType={animationType} transparent={transparent} {...rest}>
       <Style_ModalPositioning>
         <Style_ModalContainer>
           {children}
         </Style_ModalContainer>
       </Style_ModalPositioning>
-    </Style_Modal>
+    </RNModal>
   )
 };
 

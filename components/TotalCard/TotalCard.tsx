@@ -1,37 +1,30 @@
-import React, {useEffect, useState} from "react";
-import BaseCard from "../BaseCard/BaseCard";
-import {View} from "react-native";
-import Label from "../Label/Label";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import styled, {css, useTheme} from "styled-components/native";
-import {useMMKVNumber, useMMKVObject} from "react-native-mmkv";
-import Button from "../Button/Button";
-import Input from "../Input/Input";
-import numberCurrency from "../../helpers/numberCurrency";
-import {Expense} from "../../types/expenses.type";
-import Modal from "../Modal/Modal";
+import React, { useEffect, useState } from 'react';
+import BaseCard from '../BaseCard/BaseCard';
+import { View } from 'react-native';
+import Label from '../Label/Label';
+import styled from 'styled-components/native';
+import { useMMKVNumber, useMMKVObject } from 'react-native-mmkv';
+import Button from '../Button/Button';
+import Input from '../Input/Input';
+import numberCurrency from '../../helpers/numberCurrency';
+import { Expense } from '../../types/expenses.type';
+import Modal from '../Modal/Modal';
 import Separator from '../Separator/Separator';
+import RowView from '../RowView/RowView';
+import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 
 const Style_Item = styled.Pressable`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
-const Style_RowView = styled.View`
-  flex-direction: row;
-  align-items: center;
-  ${({ theme }) => css`
-    gap: ${theme.size.m.px}
-  `}
-`
 const Style_FullInput = styled(Input)`
   flex: 1;
-`
+`;
 
 const TotalCard = () => {
-  const theme = useTheme();
   const [ currentValue, setCurrentValue ] = useMMKVNumber('currentValue');
   const [ expenses ] = useMMKVObject<Expense[]>('expenses');
   const [ remainingValue, setRemainingValue ] = useMMKVNumber('remainingValue');
@@ -44,10 +37,10 @@ const TotalCard = () => {
       return;
     }
     const sum = expenses
-        ?.map(expense =>
-          expense.amount - (expense.paid?.reduce((acc, x) => acc + x, 0) || 0)
-        )
-        .reduce((acc, x) => acc + x, 0)
+      ?.map(expense =>
+        expense.amount - (expense.paid?.reduce((acc, x) => acc + x, 0) || 0)
+      )
+      .reduce((acc, x) => acc + x, 0)
       || 0;
     setRemainingValue(currentValue - sum);
   }, [ currentValue, expenses ]);
@@ -55,19 +48,19 @@ const TotalCard = () => {
   const onRequestClose = () => {
     setModalVisible(false);
     setEditValue(currentValue?.toString());
-  }
+  };
 
   const onEndEditing = () => {
-    setModalVisible(false)
+    setModalVisible(false);
     setCurrentValue(editValue ? parseFloat(
       editValue?.replace(',', '.')
-    ) : undefined)
-  }
+    ) : undefined);
+  };
 
   return (
     <BaseCard>
       <Style_Item onPress={() => setModalVisible(!isModalVisible)}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Label color="textSecondary" size="s">
             Aktueller Saldo
           </Label>
@@ -79,7 +72,7 @@ const TotalCard = () => {
           visible={isModalVisible}
           onRequestClose={onRequestClose}
         >
-          <Style_RowView>
+          <RowView>
             <Style_FullInput
               keyboardType="decimal-pad"
               value={editValue}
@@ -88,7 +81,7 @@ const TotalCard = () => {
               onEndEditing={onEndEditing}
             />
             <Label>€</Label>
-          </Style_RowView>
+          </RowView>
           <Button
             padding="s"
             onPress={onEndEditing}
@@ -97,8 +90,7 @@ const TotalCard = () => {
           </Button>
         </Modal>
         <FontAwesomeIcon
-          color={theme.color.textSecondary}
-          size={theme.size.m.value * 16}
+          color="textSecondary"
           icon="pen"
         />
       </Style_Item>
@@ -112,7 +104,7 @@ const TotalCard = () => {
         {numberCurrency(remainingValue)}
       </Label>
     </BaseCard>
-  )
-}
+  );
+};
 
 export default TotalCard;

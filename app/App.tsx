@@ -20,25 +20,45 @@ import {useFonts} from '@expo-google-fonts/inter/useFonts';
 import { Appearance } from 'react-native';
 import Settings from '../screens/Settings';
 import { useMMKVString } from 'react-native-mmkv';
+import LoanFunds from '../screens/LoanFunds';
+import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 
 library.add(fab, fas, far)
 
 const RootStack = createDrawerNavigator({
   initialRouteName: 'Home',
   screenOptions: {
+    drawerType: 'back',
     drawerStatusBarAnimation: 'slide',
     headerShown: false,
   },
   screens: {
     Home: {
       screen: Home,
+      options: {
+        drawerIcon: ({ focused }) => (
+          <FontAwesomeIcon icon="home" color={focused ? 'primary' : 'textSecondary'} />
+        )
+      }
+    },
+    LoanFunds: {
+      screen: LoanFunds,
+      options: {
+        title: "Leihgelder",
+        drawerIcon: ({ focused }) => (
+          <FontAwesomeIcon icon="hand-holding-dollar" color={focused ? 'primary' : 'textSecondary'} />
+        )
+      }
     },
     Settings: {
       screen: Settings,
       options: {
-        title: "Einstellungen"
-      }
-    }
+        title: "Einstellungen",
+        drawerIcon: ({ focused }) => (
+          <FontAwesomeIcon icon="cog" color={focused ? 'primary' : 'textSecondary'} />
+        )
+      },
+    },
   },
 
 });
