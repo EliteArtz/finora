@@ -1,5 +1,5 @@
 import React from "react";
-import styled, {css, useTheme} from 'styled-components/native';
+import styled, {css} from 'styled-components/native';
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {ParamListBase, useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button/Button";
@@ -34,10 +34,14 @@ const Style_TopActions = styled.View`
   `}
 `
 
-const Layout01 = ({ children }: { children: React.ReactNode }) => {
+const Style_FontAwesomeIcon = styled(FontAwesomeIcon).attrs(({ theme }) => ({
+  color: theme.color.primary,
+  size: theme.size.m.value * 16
+}))``;
+
+const Layout01 = ({ children }: { children?: React.ReactNode }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const theme = useTheme();
 
   return (
     <Style_SafeView
@@ -49,19 +53,11 @@ const Layout01 = ({ children }: { children: React.ReactNode }) => {
     >
       <Style_Layout01>
         <Style_TopActions>
-          <Button onPress={() => navigation.openDrawer()}>
-            <FontAwesomeIcon
-              color={theme.color.primary}
-              size={theme.size.m.value * 16}
-              icon="bars"
-            />
+          <Button onPress={navigation.openDrawer}>
+            <Style_FontAwesomeIcon icon="bars" />
           </Button>
-          <Button>
-            <FontAwesomeIcon
-              color={theme.color.primary}
-              size={theme.size.m.value * 16}
-              icon="gear"
-            />
+          <Button onPress={() => navigation.navigate('Settings')}>
+            <Style_FontAwesomeIcon icon="gear"/>
           </Button>
         </Style_TopActions>
         {children}

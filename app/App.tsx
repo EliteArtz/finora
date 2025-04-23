@@ -1,9 +1,9 @@
 import 'react-native-gesture-handler';
-import React from "react";
+import React, { ComponentProps, useEffect } from 'react';
 import {StatusBar} from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
 import {ThemeProvider} from 'styled-components/native';
-import theme from "../assets/style/theme";
+import theme, { darkTheme } from '../assets/style/theme';
 
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {fab} from "@fortawesome/free-brands-svg-icons";
@@ -17,39 +17,87 @@ import {createDrawerNavigator} from "@react-navigation/drawer";
 import {Inter_400Regular} from "@expo-google-fonts/inter/400Regular";
 import {Inter_700Bold} from "@expo-google-fonts/inter/700Bold";
 import {useFonts} from '@expo-google-fonts/inter/useFonts';
+import { Appearance } from 'react-native';
+import Settings from '../screens/Settings';
+import { useMMKVString } from 'react-native-mmkv';
 
 library.add(fab, fas, far)
 
 const RootStack = createDrawerNavigator({
   initialRouteName: 'Home',
   screenOptions: {
+    drawerStatusBarAnimation: 'slide',
     headerShown: false,
-    drawerActiveTintColor: theme.color.primary,
-    drawerInactiveTintColor: theme.color.textPrimary
   },
   screens: {
     Home: {
       screen: Home,
     },
+    Settings: {
+      screen: Settings,
+      options: {
+        title: "Einstellungen"
+      }
+    }
   },
+
 });
 
 const Navigation = createStaticNavigation(RootStack);
 
 const App = () => {
+  const [ selectedTheme ] = useMMKVString('theme');
+  const scheme = selectedTheme === 'dark' ? 'dark' : 'light';
+  const invScheme = selectedTheme === 'dark' ? 'light' : 'dark';
+  const themeObject = selectedTheme === 'dark' ? darkTheme : theme;
+  const navigatorTheme: ComponentProps<typeof Navigation>['theme'] = {
+    colors: {
+      primary: themeObject.color.primary,
+      background: themeObject.color.background,
+      card: themeObject.color.surface,
+      text: themeObject.color.textPrimary,
+      border: 'white',
+      notification: 'white'
+    },
+    dark: selectedTheme === 'dark',
+    fonts: {
+      regular: {
+        fontFamily: 'Inter_400Regular',
+        fontWeight: 'normal'
+      },
+      medium: {
+        fontFamily: 'Inter_700Bold',
+        fontWeight: 'normal'
+      },
+      bold: {
+        fontFamily: 'Inter_700Bold',
+        fontWeight: 'bold'
+      },
+      heavy: {
+        fontFamily: 'Inter_700Bold',
+        fontWeight: 'bold'
+      }
+    }
+  };
+
   NavigationBar.setPositionAsync('absolute');
   NavigationBar.setBackgroundColorAsync('#ffffff00');
-  NavigationBar.setButtonStyleAsync("dark");
   useFonts({
     Inter_400Regular,
     Inter_700Bold,
   });
 
+
+  useEffect(() => {
+    Appearance.setColorScheme(scheme)
+    NavigationBar.setButtonStyleAsync(scheme);
+  }, [scheme, invScheme]);
+
   return (
     <SafeAreaProvider>
-      <ThemeProvider theme={theme}>
-        <StatusBar style="dark" />
-        <Navigation />
+      <ThemeProvider theme={themeObject}>
+        <StatusBar style={invScheme} />
+        <Navigation theme={navigatorTheme} />
       </ThemeProvider>
     </SafeAreaProvider>
   );

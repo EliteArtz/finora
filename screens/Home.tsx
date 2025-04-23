@@ -1,13 +1,12 @@
-import React from "react";
-import Layout01 from "../layouts/Layout01/Layout01";
-import Button from "../components/Button/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import styled, {css, useTheme} from "styled-components/native";
-import Label from "../components/Label/Label";
-import TotalCard from "../components/TotalCard/TotalCard";
-import ExpensesCard from "../components/ExpensesCard/ExpensesCard";
-import theme from "../assets/style/theme";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import React from 'react';
+import Layout01 from '../layouts/Layout01/Layout01';
+import styled, { css } from 'styled-components/native';
+import Label from '../components/Label/Label';
+import TotalCard from '../components/TotalCard/TotalCard';
+import ExpensesCard from '../components/ExpensesCard/ExpensesCard';
+import theme from '../assets/style/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import EntryButton from '../components/EntryButton/EntryButton';
 
 
 const Style_BottomAction = styled.View`
@@ -19,14 +18,14 @@ const Style_BottomAction = styled.View`
   ${({ theme }) => css`
     bottom: ${theme.size.xl.px};
   `}
-`
+`;
 
 const Style_CardContainer = styled.View`
   display: flex;
   ${({ theme }) => css`
     gap: ${(theme.size.s.value / 1.5) * 16}px;
   `}
-`
+`;
 
 const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   const insets = useSafeAreaInsets();
@@ -41,10 +40,9 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   flex: 1;
   flex-direction: column;
   padding-inline: ${theme.size.l.px};
-`
+`;
 
 const Home = () => {
-  const theme = useTheme();
 
   return (
     <Layout01>
@@ -64,13 +62,7 @@ const Home = () => {
         </Style_CardContainer>
       </Style_ScrollView>
       <Style_BottomAction>
-        <Button type="primary" padding="l" onPress={() => alert("Edit")} >
-          <FontAwesomeIcon
-            color={theme.color.surface}
-            size={theme.size.l.value * 16}
-            icon="pen"
-          />
-        </Button>
+        <EntryButton />
       </Style_BottomAction>
     </Layout01>
   );

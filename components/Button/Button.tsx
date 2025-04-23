@@ -1,11 +1,11 @@
 import React, {ReactNode} from "react";
-import styled, {css} from "styled-components/native";
+import styled, { css, DefaultTheme } from 'styled-components/native';
 import {PressableProps} from "react-native";
-import theme from "../../assets/style/theme";
+import theme from '../../assets/style/theme';
 
 type ButtonProps = PressableProps & {
   children?: ReactNode;
-  type?: 'default' | 'primary';
+  type?: 'default' | 'primary' | 'danger';
   padding?: keyof typeof theme.size;
   size?: keyof typeof theme.size;
   onPress?: PressableProps['onPress'];
@@ -17,16 +17,31 @@ type Style_ButtonProps = {
   $size: NonNullable<ButtonProps['padding']>;
 }
 
+const handleButtonType = (type: ButtonProps['type'], theme: DefaultTheme) => {
+  switch (type) {
+    case 'primary':
+      return theme.color.primary;
+    case 'danger':
+      return theme.color.danger;
+    default:
+      return theme.color.surface
+  }
+}
+
 const Style_ButtonContainer = styled.View`
   border-radius: 999px;
   overflow: hidden;
 `
 
-const Style_Button = styled.Pressable<Style_ButtonProps>`
+const Style_Button = styled.Pressable.attrs<Style_ButtonProps>(({theme}) => ({
+  android_ripple: {
+    color: theme.color.light_transparency,
+    borderless: true,
+  }
+}))`
   border-radius: 999px;
   ${({ theme, $type, $padding, $size }) => css`
-    color: ${theme.color.primary};
-    background-color: ${$type === 'default' ? theme.color.surface : theme.color.primary};
+    background-color: ${handleButtonType($type, theme)};
     font-size: ${theme.size[$size].px};
     padding: ${theme.size[$padding].px};
   `}
@@ -45,11 +60,6 @@ const Button = ({
         $type={type}
         $padding={padding}
         $size={size}
-        android_ripple={{
-          color: 'rgba(0,0,0,0.2)',
-          radius: 100,
-          borderless: true
-        }}
         {...rest}
       >{children}</Style_Button>
     </Style_ButtonContainer>

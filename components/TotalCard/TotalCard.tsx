@@ -10,6 +10,7 @@ import Input from "../Input/Input";
 import numberCurrency from "../../helpers/numberCurrency";
 import {Expense} from "../../types/expenses.type";
 import Modal from "../Modal/Modal";
+import Separator from '../Separator/Separator';
 
 const Style_Item = styled.Pressable`
   display: flex;
@@ -18,12 +19,15 @@ const Style_Item = styled.Pressable`
   align-items: center;
 `
 
-const Style_Separator = styled.View`
-  height: 1px;
-  background-color: rgba(0, 0, 0, 0.1);
+const Style_RowView = styled.View`
+  flex-direction: row;
+  align-items: center;
   ${({ theme }) => css`
-    margin-block: ${theme.size.m.px};
+    gap: ${theme.size.m.px}
   `}
+`
+const Style_FullInput = styled(Input)`
+  flex: 1;
 `
 
 const TotalCard = () => {
@@ -72,19 +76,19 @@ const TotalCard = () => {
           </Label>
         </View>
         <Modal
-          animationType="fade"
           visible={isModalVisible}
           onRequestClose={onRequestClose}
-          transparent
         >
-          <Input
-            keyboardType="decimal-pad"
-            value={editValue}
-            placeholder="Aktueller Saldo"
-            onChangeText={setEditValue}
-            onEndEditing={onEndEditing}
-            autoFocus
-          />
+          <Style_RowView>
+            <Style_FullInput
+              keyboardType="decimal-pad"
+              value={editValue}
+              placeholder="Aktueller Saldo"
+              onChangeText={setEditValue}
+              onEndEditing={onEndEditing}
+            />
+            <Label>€</Label>
+          </Style_RowView>
           <Button
             padding="s"
             onPress={onEndEditing}
@@ -98,7 +102,7 @@ const TotalCard = () => {
           icon="pen"
         />
       </Style_Item>
-      <Style_Separator />
+      <Separator />
       <Label color="textSecondary" size="s">Restsaldo</Label>
       <Label
         color={!remainingValue ? 'textPrimary' : remainingValue < 0 ? 'danger' : 'primary'}

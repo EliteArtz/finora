@@ -1,4 +1,5 @@
 export type Expense = {
+  id: string,
   type: 'fixed' | 'transaction',
   amount: number,
   description?: string,
