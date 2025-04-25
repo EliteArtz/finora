@@ -1,12 +1,12 @@
-import Modal from '../Modal/Modal';
-import RowView from '../RowView/RowView';
-import Label from '../Label/Label';
-import Button from '../Button/Button';
-import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
-import Input from '../Input/Input';
-import Separator from '../Separator/Separator';
+import Modal from '../../components/Modal/Modal';
+import RowView from '../../components/RowView/RowView';
+import Label from '../../components/Label/Label';
+import Button from '../../components/Button/Button';
+import FontAwesomeIcon from '../../components/FontAwesomeIcon/FontAwesomeIcon';
+import Input from '../../components/Input/Input';
+import Separator from '../../components/Separator/Separator';
 import numberCurrency from '../../helpers/numberCurrency';
-import Pressable from '../Pressable/Pressable';
+import Pressable from '../../components/Pressable/Pressable';
 import React, { useEffect, useState } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { Expense } from '../../types/expenses.type';
@@ -28,14 +28,14 @@ type EditExpenseProps = {
 
 const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
-    gap: theme.size.s.value * 16
+    gap: theme.size.s.value * 16,
+    padding: theme.size.s.value * 16,
   }
 }))`
   max-height: 100px;
   ${({ theme }) => css`
     border-radius: ${theme.size.s.px};
     background-color: ${theme.color.background};
-    padding: ${theme.size.s.px};
   `}
 `
 
@@ -111,12 +111,12 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
         <Label size="s" color="textSecondary">
           Eintrag bearbeiten
         </Label>
-        <Button
-          padding="s"
+        <Pressable
           onPress={() => onDeletePress(expenseId)}
+          hitSlop={16}
         >
           <FontAwesomeIcon color="danger" size="s" icon="trash" />
-        </Button>
+        </Pressable>
       </RowView>
       <Input
         placeholder="Beschreibung (optional)"

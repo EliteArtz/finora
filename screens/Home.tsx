@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Layout01 from '../layouts/Layout01/Layout01';
-import styled, { css } from 'styled-components/native';
+import styled, {css} from 'styled-components/native';
 import Label from '../components/Label/Label';
 import TotalCard from '../components/TotalCard/TotalCard';
 import ExpensesCard from '../components/ExpensesCard/ExpensesCard';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import EntryButton from '../components/EntryButton/EntryButton';
-import { Expense } from '../types/expenses.type';
-import EditExpenseModal from '../components/EditExpenseModal/EditExpenseModal';
-import { View } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import ExpenseButton from '../components/ExpenseButton/ExpenseButton';
+import SavingsCard from "../components/SavingsCard/SavingsCard";
 
 
 const Style_BottomAction = styled.View`
@@ -47,32 +45,28 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
 `;
 
 const Home = () => {
-  const [ expenseId, setExpenseId ] = useState<Expense['id']>();
-  const [ isEditExpenseModalVisible, setEditExpenseModalVisible ] = useState<boolean>(false);
 
   return (
     <Layout01>
       <Style_ScrollView>
         <TotalCard />
+        <SavingsCard />
         <Style_CardContainer>
           <Label size="s" color="textSecondary">
             Fixe Kosten
           </Label>
-          <ExpensesCard type="fixed" setExpenseId={setExpenseId} setModalVisible={setEditExpenseModalVisible} />
+          <ExpensesCard type="fixed" />
         </Style_CardContainer>
         <Style_CardContainer>
           <Label size="s" color="textSecondary">
             Buchungen
           </Label>
-          <ExpensesCard type="transaction" setExpenseId={setExpenseId} setModalVisible={setEditExpenseModalVisible} />
+          <ExpensesCard type="transaction" />
         </Style_CardContainer>
       </Style_ScrollView>
       <Style_BottomAction>
-        <EntryButton />
+        <ExpenseButton />
       </Style_BottomAction>
-      <View>
-        <EditExpenseModal expenseId={expenseId} visible={isEditExpenseModalVisible} setVisible={setEditExpenseModalVisible} />
-      </View>
     </Layout01>
   );
 };

@@ -1,15 +1,15 @@
 import Layout01 from '../layouts/Layout01/Layout01';
 import Button from '../components/Button/Button';
-import { useMMKV, useMMKVString } from 'react-native-mmkv';
-import styled, { css } from 'styled-components/native';
+import {useMMKV, useMMKVString} from 'react-native-mmkv';
+import styled, {css} from 'styled-components/native';
 import Label from '../components/Label/Label';
-import { Picker as RNPicker } from '@react-native-picker/picker';
+import {Picker as RNPicker} from '@react-native-picker/picker';
 import Picker from '../components/Picker/Picker';
 import Separator from '../components/Separator/Separator';
 import RowView from '../components/RowView/RowView';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 import Modal from '../components/Modal/Modal';
-import { useState } from 'react';
+import React, {useState} from 'react';
 
 const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
@@ -37,8 +37,8 @@ const Settings = () => {
             selectedValue={theme}
             onValueChange={(value) => setTheme(value as string)}
           >
-            <RNPicker.Item value="light" label="Light Theme" />
-            <RNPicker.Item value="dark" label="Dark Theme" />
+            <RNPicker.Item value="light" label="Hell" />
+            <RNPicker.Item value="dark" label="Dunkel" />
           </Picker>
         </RowView>
         <Separator />
@@ -49,16 +49,18 @@ const Settings = () => {
           visible={isConfirmModalVisible}
           onRequestClose={() => setConfirmModalVisible(false)}
         >
-          <Label align='center'>Wirklich alle Daten löschen?</Label>
+          <Label align="center">Wirklich alle Daten löschen?</Label>
           <RowView>
-            <Button type='danger' isFullWidth onPress={() => {
+            <Button
+              type="danger" isFullWidth onPress={() => {
               MMKV.clearAll();
               setConfirmModalVisible(false);
-            }}>
-              <Label align='center' color='danger'>Löschen</Label>
+            }}
+            >
+              <Label align="center" color="danger">Löschen</Label>
             </Button>
             <Button isFullWidth onPress={() => setConfirmModalVisible(false)}>
-              <Label align='center'>Abbrechen</Label>
+              <Label align="center">Abbrechen</Label>
             </Button>
           </RowView>
         </Modal>

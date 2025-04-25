@@ -3,11 +3,11 @@ import uuid from 'react-native-uuid';
 import Modal from '../Modal/Modal';
 import Label from '../Label/Label';
 import Input from '../Input/Input';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
-import { useMMKVObject } from 'react-native-mmkv';
-import { Expense } from '../../types/expenses.type';
-import { Picker as RNPicker } from '@react-native-picker/picker';
+import {useMMKVObject} from 'react-native-mmkv';
+import {Expense} from '../../types/expenses.type';
+import {Picker as RNPicker} from '@react-native-picker/picker';
 import Picker from '../Picker/Picker';
 import RowView from '../RowView/RowView';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
@@ -16,7 +16,7 @@ const Style_FullInput = styled(Input)`
   flex: 1;
 `;
 
-const EntryButton = () => {
+const ExpenseButton = () => {
   const [ isModalVisible, setIsModalVisible ] = useState(false);
   const [ type, setType ] = useState<Expense['type']>('transaction');
   const [ description, setDescription ] = useState<string>();
@@ -69,13 +69,26 @@ const EntryButton = () => {
         onRequestClose={onRequestClose}
       >
         <Label size="s" color="textSecondary">Eintrag verfassen</Label>
-        <Picker mode="dropdown" selectedValue={type} onValueChange={(item) => setType(item as Expense['type'])}>
+        <Picker
+          mode="dropdown"
+          selectedValue={type}
+          onValueChange={(item) => setType(item as Expense['type'])}
+        >
           <RNPicker.Item label="Buchung" value="transaction" />
           <RNPicker.Item label="Fixe Kosten" value="fixed" />
         </Picker>
-        <Input placeholder="Beschreibung (optional)" value={description} onChangeText={setDescription} />
+        <Input
+          placeholder="Beschreibung (optional)"
+          value={description}
+          onChangeText={setDescription}
+        />
         <RowView>
-          <Style_FullInput placeholder="Wert" keyboardType="decimal-pad" value={expense} onChangeText={setExpense} />
+          <Style_FullInput
+            placeholder="Wert"
+            keyboardType="decimal-pad"
+            value={expense}
+            onChangeText={setExpense}
+          />
           <Label>€</Label>
         </RowView>
         <Button onPress={onSubmit} disabled={!expense}>
@@ -86,4 +99,4 @@ const EntryButton = () => {
   );
 };
 
-export default EntryButton;
+export default ExpenseButton;

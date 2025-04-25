@@ -1,5 +1,5 @@
 import styled, {css} from "styled-components/native";
-import {Modal as RNModal, ModalProps} from "react-native";
+import {Modal as RNModal, ModalProps, View} from "react-native";
 
 const Style_ModalPositioning = styled.View`
   display: flex;
@@ -23,15 +23,25 @@ const Style_ModalContainer = styled.View`
   `}
 `
 
-const Modal = ({children, animationType='fade', transparent=true, ...rest}: ModalProps) => {
+const Modal = ({
+  children,
+  animationType = 'fade',
+  transparent = true,
+  ...rest
+}: ModalProps) => {
   return (
-    <RNModal animationType={animationType} transparent={transparent} {...rest}>
-      <Style_ModalPositioning>
-        <Style_ModalContainer>
-          {children}
-        </Style_ModalContainer>
-      </Style_ModalPositioning>
-    </RNModal>
+    <View>
+      <RNModal
+        animationType={animationType}
+        transparent={transparent} {...rest}
+      >
+        <Style_ModalPositioning>
+          <Style_ModalContainer>
+            {children}
+          </Style_ModalContainer>
+        </Style_ModalPositioning>
+      </RNModal>
+    </View>
   )
 };
 

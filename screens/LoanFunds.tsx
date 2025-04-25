@@ -1,8 +1,7 @@
 import Label from "../components/Label/Label";
 import Layout01 from "../layouts/Layout01/Layout01";
-import styled, { css } from 'styled-components/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import TotalCard from '../components/TotalCard/TotalCard';
+import styled, {css} from 'styled-components/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   const insets = useSafeAreaInsets();
@@ -26,7 +25,6 @@ const LoanFunds = () => {
     <Layout01>
       <Style_ScrollView>
         <Label size="xl" weight="bold">Leihgelder</Label>
-        <TotalCard />
       </Style_ScrollView>
     </Layout01>
   );

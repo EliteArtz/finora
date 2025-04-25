@@ -13,6 +13,7 @@ type StyleTextInputProps = {
 const Style_TextInput = styled.TextInput.attrs<StyleTextInputProps>(({ theme }) => ({
   placeholderTextColor: theme.color.textSecondary,
 }))`
+  font-family: 'Inter_400Regular';
   ${({ theme }) => css`
     color: ${theme.color.textPrimary};
     padding: ${theme.size.s.px};

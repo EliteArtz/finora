@@ -1,35 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import BaseCard from '../BaseCard/BaseCard';
-import { View } from 'react-native';
+import {View} from 'react-native';
 import Label from '../Label/Label';
 import styled from 'styled-components/native';
-import { useMMKVNumber, useMMKVObject } from 'react-native-mmkv';
-import Button from '../Button/Button';
-import Input from '../Input/Input';
+import {useMMKVNumber, useMMKVObject} from 'react-native-mmkv';
 import numberCurrency from '../../helpers/numberCurrency';
-import { Expense } from '../../types/expenses.type';
-import Modal from '../Modal/Modal';
+import {Expense} from '../../types/expenses.type';
 import Separator from '../Separator/Separator';
 import RowView from '../RowView/RowView';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
+import Pressable from "../Pressable/Pressable";
+import InputValueModal from "../../modals/InputValueModal/InputValueModal";
 
-const Style_Item = styled.Pressable`
-  display: flex;
+const Style_Item = styled(Pressable)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-`;
-
-const Style_FullInput = styled(Input)`
-  flex: 1;
 `;
 
 const TotalCard = () => {
   const [ currentValue, setCurrentValue ] = useMMKVNumber('currentValue');
   const [ expenses ] = useMMKVObject<Expense[]>('expenses');
   const [ remainingValue, setRemainingValue ] = useMMKVNumber('remainingValue');
-  const [ editValue, setEditValue ] = useState(currentValue?.toString());
   const [ isModalVisible, setModalVisible ] = useState(false);
+  const [ savings ] = useMMKVNumber('savings');
+
+  const fixedExpenses = expenses?.reduce((
+    acc,
+    expense
+  ) => expense.type === 'fixed' ? acc + expense.amount - (
+    expense.paid?.reduce((acc2, paid) => (
+      acc2 + paid
+    ), 0) || 0
+  ) : acc, 0);
+  const transactionExpenses = expenses?.reduce((
+    acc,
+    expense
+  ) => expense.type === 'transaction' ? acc + expense.amount : acc, 0);
 
   useEffect(() => {
     if (!currentValue) {
@@ -37,25 +44,15 @@ const TotalCard = () => {
       return;
     }
     const sum = expenses
-      ?.map(expense =>
-        expense.amount - (expense.paid?.reduce((acc, x) => acc + x, 0) || 0)
-      )
-      .reduce((acc, x) => acc + x, 0)
-      || 0;
-    setRemainingValue(currentValue - sum);
-  }, [ currentValue, expenses ]);
-
-  const onRequestClose = () => {
-    setModalVisible(false);
-    setEditValue(currentValue?.toString());
-  };
-
-  const onEndEditing = () => {
-    setModalVisible(false);
-    setCurrentValue(editValue ? parseFloat(
-      editValue?.replace(',', '.')
-    ) : undefined);
-  };
+      ?.reduce((acc, expense) => (
+        acc
+        + expense.amount
+        - (expense.paid?.reduce((acc2, paid) => (
+          acc2 + paid
+        ), 0) || 0)
+      ), 0) || 0;
+    setRemainingValue(currentValue - sum - (savings || 0));
+  }, [ currentValue, expenses, savings ]);
 
   return (
     <BaseCard>
@@ -68,30 +65,16 @@ const TotalCard = () => {
             {numberCurrency(currentValue)}
           </Label>
         </View>
-        <Modal
-          visible={isModalVisible}
-          onRequestClose={onRequestClose}
-        >
-          <RowView>
-            <Style_FullInput
-              keyboardType="decimal-pad"
-              value={editValue}
-              placeholder="Aktueller Saldo"
-              onChangeText={setEditValue}
-              onEndEditing={onEndEditing}
-            />
-            <Label>€</Label>
-          </RowView>
-          <Button
-            padding="s"
-            onPress={onEndEditing}
-          >
-            <Label align="center">OK</Label>
-          </Button>
-        </Modal>
         <FontAwesomeIcon
           color="textSecondary"
           icon="pen"
+        />
+        <InputValueModal
+          label="Aktueller Saldo"
+          isVisible={isModalVisible}
+          setIsVisible={setModalVisible}
+          value={currentValue}
+          setValue={setCurrentValue}
         />
       </Style_Item>
       <Separator />
@@ -103,6 +86,31 @@ const TotalCard = () => {
       >
         {numberCurrency(remainingValue)}
       </Label>
+      <Separator />
+      {!!fixedExpenses &&
+        <RowView style={{ justifyContent: 'space-between' }}>
+          <Label color="textSecondary" size="s">Fixe Kosten</Label>
+          <Label color="textSecondary" size="s" weight="bold">
+            {numberCurrency(fixedExpenses)}
+          </Label>
+        </RowView>
+      }
+      {!!transactionExpenses &&
+        <RowView style={{ justifyContent: 'space-between' }}>
+          <Label color="textSecondary" size="s">Buchungen</Label>
+          <Label color="textSecondary" size="s" weight="bold">
+            {numberCurrency(transactionExpenses)}
+          </Label>
+        </RowView>
+      }
+      {!!savings &&
+        <RowView style={{ justifyContent: 'space-between' }}>
+          <Label color="textSecondary" size="s">Ersparnisse</Label>
+          <Label color="textSecondary" size="s" weight="bold">
+            {numberCurrency(savings)}
+          </Label>
+        </RowView>
+      }
     </BaseCard>
   );
 };
