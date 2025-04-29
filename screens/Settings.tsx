@@ -10,6 +10,11 @@ import RowView from '../components/RowView/RowView';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 import Modal from '../components/Modal/Modal';
 import React, {useState} from 'react';
+import * as FileSystem from 'expo-file-system';
+import * as DocumentPicker from 'expo-document-picker';
+import * as Sharing from 'expo-sharing';
+import { Expense } from '../types/expenses.type';
+import { Platform } from 'react-native';
 
 const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
@@ -25,6 +30,60 @@ const Settings = () => {
   const MMKV = useMMKV();
   const [ isConfirmModalVisible, setConfirmModalVisible ] = useState(false);
   const [ theme, setTheme ] = useMMKVString('theme');
+
+  const importData = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: 'application/json',
+    });
+
+    if(result.canceled) return;
+
+    const fileContent = await FileSystem.readAsStringAsync(result.assets[0].uri);
+    const data = JSON.parse(fileContent);
+
+    Object.keys(data).forEach((key) => {
+      MMKV.set(key, typeof data[key] === 'number' || typeof data[key] === 'boolean' ? data[key] : JSON.stringify(data[key]));
+    })
+  }
+
+  const exportData = async () => {
+    const json = JSON.stringify({
+      currentValue: MMKV.getNumber('currentValue'),
+      savings: MMKV.getNumber('savings'),
+      expenses: JSON.parse(MMKV.getString('expenses') || '[]') as Expense[],
+      theme: MMKV.getString('theme'),
+    });
+    const filename = `backup_${new Date().toISOString().split('T')[0]}.json`;
+    const path = FileSystem.cacheDirectory + filename;
+    await FileSystem.writeAsStringAsync(path, json);
+
+    if(Platform.OS === 'android') {
+      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+      if (!permissions.granted) {
+        await FileSystem.deleteAsync(path)
+        return;
+      }
+
+      const uri = await FileSystem.StorageAccessFramework.createFileAsync(
+        permissions.directoryUri,
+        filename,
+        'application/json'
+      );
+      await FileSystem.StorageAccessFramework.writeAsStringAsync(
+        uri,
+        json
+      );
+    } else {
+      if(!await Sharing.isAvailableAsync()) {
+        await FileSystem.deleteAsync(path)
+        return;
+      }
+      await Sharing.shareAsync(path)
+    }
+    await FileSystem.deleteAsync(path)
+  }
+
   return (
     <Layout01>
       <Style_Settings>
@@ -42,7 +101,19 @@ const Settings = () => {
           </Picker>
         </RowView>
         <Separator />
+        <Label weight='bold' size='l'>Daten</Label>
+        <RowView>
+          <Button onPress={importData} isFullWidth>
+            <FontAwesomeIcon icon='file-import' />
+            <Label>Import</Label>
+          </Button>
+          <Button onPress={exportData} isFullWidth>
+            <FontAwesomeIcon icon='file-export' />
+            <Label>Export</Label>
+          </Button>
+        </RowView>
         <Button type="danger" onPress={() => setConfirmModalVisible(true)}>
+          <FontAwesomeIcon icon='warning' color='danger' />
           <Label color="danger" align="center">Alle Daten löschen</Label>
         </Button>
         <Modal

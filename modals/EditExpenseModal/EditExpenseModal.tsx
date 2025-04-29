@@ -86,6 +86,11 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
     setVisible(false);
   }
 
+  const onSubmitPaidEdit = () => {
+    editPaidValue && onEditChange({ paid: [ ...(editExpense?.paid || []), parseFloat(editPaidValue?.replace(',', '.')) ] })
+    setEditPaidValue(undefined);
+  }
+
   useEffect(() => {
     if (!expenseId) return;
 
@@ -137,7 +142,7 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
         <>
           <Separator />
           <Label size="s" color="textSecondary">Bezahlt</Label>
-          <Style_ScrollView style={{ maxHeight: 100}}>
+          <Style_ScrollView>
             {editExpense.paid?.map((paid, index) => (
               <RowView key={index} style={{ justifyContent: 'space-between' }}>
                 <Label color='textPrimary' weight='bold'>{numberCurrency(paid)}</Label>
@@ -153,11 +158,9 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
               placeholder='Wert in EUR'
               keyboardType='decimal-pad'
               onChangeText={setEditPaidValue}
+              onSubmitEditing={onSubmitPaidEdit}
               isFullWidth />
-            <Pressable onPress={() => {
-              editPaidValue && onEditChange({ paid: [ ...(editExpense?.paid || []), parseFloat(editPaidValue) ] })
-              setEditPaidValue(undefined);
-            }}>
+            <Pressable onPress={onSubmitPaidEdit}>
               <FontAwesomeIcon color='primary' size='l' icon='add' />
             </Pressable>
           </RowView>

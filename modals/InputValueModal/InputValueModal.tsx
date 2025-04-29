@@ -32,7 +32,7 @@ const InputValueModal = ({
     setEditValue(value?.toString());
   };
 
-  const onEndEditing = () => {
+  const onSubmitEditing = () => {
     setIsVisible(false);
     setValue(editValue ? parseFloat(
       editValue?.replace(',', '.')
@@ -50,14 +50,15 @@ const InputValueModal = ({
           keyboardType="decimal-pad"
           value={editValue}
           placeholder={label}
+          returnKeyType='done'
           onChangeText={setEditValue}
-          onEndEditing={onEndEditing}
+          onSubmitEditing={onSubmitEditing}
         />
         <Label>€</Label>
       </RowView>
       <Button
         padding="s"
-        onPress={onEndEditing}
+        onPress={onSubmitEditing}
       >
         <Label align="center">OK</Label>
       </Button>

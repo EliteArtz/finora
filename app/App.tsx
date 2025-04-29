@@ -1,29 +1,29 @@
 import 'react-native-gesture-handler';
 import React, { ComponentProps, useEffect } from 'react';
-import {StatusBar} from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
-import {ThemeProvider} from 'styled-components/native';
+import { ThemeProvider } from 'styled-components/native';
 import theme, { darkTheme } from '../assets/style/theme';
 
-import {library} from "@fortawesome/fontawesome-svg-core";
-import {fab} from "@fortawesome/free-brands-svg-icons";
-import {fas} from "@fortawesome/free-solid-svg-icons";
-import {far} from "@fortawesome/free-regular-svg-icons";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
 
-import Home from "../screens/Home";
-import {createStaticNavigation} from "@react-navigation/native";
-import {SafeAreaProvider} from "react-native-safe-area-context";
-import {createDrawerNavigator} from "@react-navigation/drawer";
-import {Inter_400Regular} from "@expo-google-fonts/inter/400Regular";
-import {Inter_700Bold} from "@expo-google-fonts/inter/700Bold";
-import {useFonts} from '@expo-google-fonts/inter/useFonts';
+import Home from '../screens/Home';
+import { createStaticNavigation } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
+import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
+import { useFonts } from '@expo-google-fonts/inter/useFonts';
 import { Appearance } from 'react-native';
 import Settings from '../screens/Settings';
 import { useMMKVString } from 'react-native-mmkv';
 import LoanFunds from '../screens/LoanFunds';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 
-library.add(fab, fas, far)
+library.add(fab, fas, far);
 
 const RootStack = createDrawerNavigator({
   initialRouteName: 'Home',
@@ -44,7 +44,7 @@ const RootStack = createDrawerNavigator({
     LoanFunds: {
       screen: LoanFunds,
       options: {
-        title: "Leihgelder",
+        title: 'Leihgelder',
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="hand-holding-dollar" color={focused ? 'primary' : 'textSecondary'} />
         )
@@ -53,7 +53,7 @@ const RootStack = createDrawerNavigator({
     Settings: {
       screen: Settings,
       options: {
-        title: "Einstellungen",
+        title: 'Einstellungen',
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="cog" color={focused ? 'primary' : 'textSecondary'} />
         )
@@ -99,21 +99,20 @@ const App = () => {
       }
     }
   };
-
-  NavigationBar.setPositionAsync('absolute');
-  NavigationBar.setBackgroundColorAsync('#ffffff00');
-  useFonts({
+  const [ loaded ] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
   });
 
+  NavigationBar.setPositionAsync('absolute');
+  NavigationBar.setBackgroundColorAsync('#ffffff00');
 
   useEffect(() => {
-    Appearance.setColorScheme(scheme)
+    Appearance.setColorScheme(scheme);
     NavigationBar.setButtonStyleAsync(scheme);
-  }, [scheme, invScheme]);
+  }, [ scheme, invScheme ]);
 
-  return (
+  return loaded && (
     <SafeAreaProvider>
       <ThemeProvider theme={themeObject}>
         <StatusBar style={invScheme} />

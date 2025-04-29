@@ -12,7 +12,6 @@ import SavingsCard from "../components/SavingsCard/SavingsCard";
 const Style_BottomAction = styled.View`
   width: 100%;
   position: absolute;
-  display: flex;
   flex-direction: row;
   justify-content: center;
   ${({ theme }) => css`

@@ -53,11 +53,15 @@ const Style_Button = styled(Pressable).attrs<Style_ButtonProps>(() => ({
     borderless: true,
   }
 }))`
+  flex-direction: row;
   border-radius: 999px;
+  align-items: center;
+  justify-content: center;
   ${({ theme, $type, $padding, $size }) => css`
     ${handleButtonType($type, theme)};
     font-size: ${theme.size[$size].px};
     padding: ${theme.size[$padding].px};
+    gap: ${theme.size.s.value * 8}px;
   `}
 `;
 

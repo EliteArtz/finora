@@ -4,17 +4,13 @@ import Modal from '../Modal/Modal';
 import Label from '../Label/Label';
 import Input from '../Input/Input';
 import React, {useEffect, useState} from 'react';
-import styled from 'styled-components/native';
 import {useMMKVObject} from 'react-native-mmkv';
 import {Expense} from '../../types/expenses.type';
 import {Picker as RNPicker} from '@react-native-picker/picker';
 import Picker from '../Picker/Picker';
 import RowView from '../RowView/RowView';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
-
-const Style_FullInput = styled(Input)`
-  flex: 1;
-`;
+import { ScrollView, View } from 'react-native';
 
 const ExpenseButton = () => {
   const [ isModalVisible, setIsModalVisible ] = useState(false);
@@ -64,37 +60,43 @@ const ExpenseButton = () => {
           icon="pen"
         />
       </Button>
-      <Modal
-        visible={isModalVisible}
-        onRequestClose={onRequestClose}
-      >
-        <Label size="s" color="textSecondary">Eintrag verfassen</Label>
-        <Picker
-          mode="dropdown"
-          selectedValue={type}
-          onValueChange={(item) => setType(item as Expense['type'])}
-        >
-          <RNPicker.Item label="Buchung" value="transaction" />
-          <RNPicker.Item label="Fixe Kosten" value="fixed" />
-        </Picker>
-        <Input
-          placeholder="Beschreibung (optional)"
-          value={description}
-          onChangeText={setDescription}
-        />
-        <RowView>
-          <Style_FullInput
-            placeholder="Wert"
-            keyboardType="decimal-pad"
-            value={expense}
-            onChangeText={setExpense}
-          />
-          <Label>€</Label>
-        </RowView>
-        <Button onPress={onSubmit} disabled={!expense}>
-          <Label align="center">OK</Label>
-        </Button>
-      </Modal>
+      <View>
+        <ScrollView>
+          <Modal
+            visible={isModalVisible}
+            onRequestClose={onRequestClose}
+          >
+            <Label size="s" color="textSecondary">Eintrag verfassen</Label>
+            <Picker
+              mode="dropdown"
+              selectedValue={type}
+              onValueChange={(item) => setType(item as Expense['type'])}
+            >
+              <RNPicker.Item label="Buchung" value="transaction" />
+              <RNPicker.Item label="Fixe Kosten" value="fixed" />
+            </Picker>
+            <Input
+              placeholder="Beschreibung (optional)"
+              value={description}
+              onChangeText={setDescription}
+            />
+            <RowView>
+              <Input
+                placeholder="Wert"
+                keyboardType="decimal-pad"
+                value={expense}
+                onChangeText={setExpense}
+                onSubmitEditing={onSubmit}
+                isFullWidth
+              />
+              <Label>€</Label>
+            </RowView>
+            <Button onPress={onSubmit} disabled={!expense}>
+              <Label align="center">OK</Label>
+            </Button>
+          </Modal>
+        </ScrollView>
+      </View>
     </>
   );
 };

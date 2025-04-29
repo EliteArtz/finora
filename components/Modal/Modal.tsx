@@ -1,23 +1,20 @@
 import styled, {css} from "styled-components/native";
 import {Modal as RNModal, ModalProps, View} from "react-native";
 
-const Style_ModalPositioning = styled.View`
-  display: flex;
-  flex: 1;
-  flex-direction: row;
+const Style_Backdrop = styled.Pressable`
+  position: absolute;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
-  justify-content: center;
-  align-items: center;
-  ${({ theme }) => css`
-    padding: ${theme.size.l.px};
-  `}
 `
 
 const Style_ModalContainer = styled.View`
-  flex: 1;
+  align-self: stretch;
+  margin-block: auto;
   ${({ theme }) => css`
     background-color: ${theme.color.surface};
     padding: ${theme.size.m.px};
+    margin-inline: ${theme.size.l.px};
     gap: ${theme.size.m.px};
     border-radius: ${theme.size.s.px};
   `}
@@ -33,13 +30,13 @@ const Modal = ({
     <View>
       <RNModal
         animationType={animationType}
-        transparent={transparent} {...rest}
+        transparent={transparent}
+        {...rest}
       >
-        <Style_ModalPositioning>
-          <Style_ModalContainer>
-            {children}
-          </Style_ModalContainer>
-        </Style_ModalPositioning>
+        <Style_Backdrop onPress={rest.onRequestClose} />
+        <Style_ModalContainer>
+          {children}
+        </Style_ModalContainer>
       </RNModal>
     </View>
   )

@@ -56,7 +56,7 @@ const TotalCard = () => {
 
   return (
     <BaseCard>
-      <Style_Item onPress={() => setModalVisible(!isModalVisible)}>
+      <Style_Item onPress={() => setModalVisible(true)}>
         <View style={{ flex: 1 }}>
           <Label color="textSecondary" size="s">
             Aktueller Saldo
