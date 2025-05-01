@@ -1,5 +1,5 @@
-import styled, {css} from "styled-components/native";
-import {Modal as RNModal, ModalProps, View} from "react-native";
+import styled, { css } from "styled-components/native";
+import { Modal as RNModal, ModalProps, Platform, View } from "react-native";
 
 const Style_Backdrop = styled.Pressable`
   position: absolute;
@@ -8,7 +8,7 @@ const Style_Backdrop = styled.Pressable`
   background-color: rgba(0, 0, 0, 0.4);
 `
 
-const Style_ModalContainer = styled.View`
+const Style_ModalContainer = styled.KeyboardAvoidingView`
   align-self: stretch;
   margin-block: auto;
   ${({ theme }) => css`
@@ -34,7 +34,7 @@ const Modal = ({
         {...rest}
       >
         <Style_Backdrop onPress={rest.onRequestClose} />
-        <Style_ModalContainer>
+        <Style_ModalContainer behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           {children}
         </Style_ModalContainer>
       </RNModal>
