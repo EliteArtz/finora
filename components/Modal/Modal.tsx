@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components/native";
+import styled, { css } from 'styled-components/native';
 import { Modal as RNModal, ModalProps, Platform, View } from "react-native";
 
 const Style_Backdrop = styled.Pressable`
@@ -6,7 +6,7 @@ const Style_Backdrop = styled.Pressable`
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
-`
+`;
 
 const Style_ModalContainer = styled.KeyboardAvoidingView`
   align-self: stretch;
@@ -18,7 +18,7 @@ const Style_ModalContainer = styled.KeyboardAvoidingView`
     gap: ${theme.size.m.px};
     border-radius: ${theme.size.s.px};
   `}
-`
+`;
 
 const Modal = ({
   children,
@@ -39,7 +39,7 @@ const Modal = ({
         </Style_ModalContainer>
       </RNModal>
     </View>
-  )
+  );
 };
 
 export default Modal;

@@ -11,10 +11,10 @@ const Style_Picker = styled(RNPicker).attrs(({ theme }) => ({
   `}
 `;
 
-const Picker = ({...rest}: ComponentProps<typeof RNPicker>) => {
+const Picker = ({ ...rest }: ComponentProps<typeof RNPicker>) => {
   return (
     <Style_Picker {...rest} />
-  )
-}
+  );
+};
 
 export default Picker;

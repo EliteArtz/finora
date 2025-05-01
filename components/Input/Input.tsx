@@ -1,6 +1,6 @@
 import { Platform, TextInputProps as RNTextInputProps } from 'react-native';
-import React from "react";
-import styled, {css} from "styled-components/native";
+import React from 'react';
+import styled, { css } from 'styled-components/native';
 
 type TextInputProps = RNTextInputProps & {
   isFullWidth?: boolean;
@@ -23,15 +23,15 @@ const Style_TextInput = styled.TextInput.attrs<StyleTextInputProps>(({ theme }) 
   ${({ $isFullWidth }) => $isFullWidth && css`
     flex: 1;
   `}
-`
+`;
 
-const Input = ({ isFullWidth=false, keyboardType, onChangeText, ...rest }: TextInputProps) => {
-  const safeKeyboardType = keyboardType === "decimal-pad" ? Platform.OS === "ios" ? "numbers-and-punctuation" : keyboardType : keyboardType;
+const Input = ({ isFullWidth = false, keyboardType, onChangeText, ...rest }: TextInputProps) => {
+  const safeKeyboardType = keyboardType === 'decimal-pad' ? Platform.OS === 'ios' ? 'numbers-and-punctuation' : keyboardType : keyboardType;
   const safeChangeText = (text: string) => {
     if (onChangeText) {
       onChangeText(keyboardType === 'decimal-pad' ? text.replace(/[^-.,\d]/g, '') : text);
     }
-  }
+  };
   return (
     <Style_TextInput
       $isFullWidth={isFullWidth}
@@ -39,7 +39,7 @@ const Input = ({ isFullWidth=false, keyboardType, onChangeText, ...rest }: TextI
       onChangeText={safeChangeText}
       {...rest}
     />
-  )
-}
+  );
+};
 
 export default Input;

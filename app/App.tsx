@@ -41,7 +41,7 @@ const RootStack = createDrawerNavigator({
         )
       }
     },
-    LoanFunds: {
+    /*LoanFunds: {
       screen: LoanFunds,
       options: {
         title: 'Leihgelder',
@@ -49,7 +49,7 @@ const RootStack = createDrawerNavigator({
           <FontAwesomeIcon icon="hand-holding-dollar" color={focused ? 'primary' : 'textSecondary'} />
         )
       }
-    },
+    },*/
     Settings: {
       screen: Settings,
       options: {

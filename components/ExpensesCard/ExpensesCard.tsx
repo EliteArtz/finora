@@ -10,7 +10,7 @@ import CircularProgress from 'react-native-circular-progress-indicator';
 import Separator from '../Separator/Separator';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 import Pressable from '../Pressable/Pressable';
-import EditExpenseModal from "../../modals/EditExpenseModal/EditExpenseModal";
+import EditExpenseModal from '../../modals/EditExpenseModal/EditExpenseModal';
 
 type ExpensesCardProps = {
   type: Expense['type'];
@@ -33,7 +33,7 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
   const onPressItem = (id: string) => {
     setExpenseId(id);
     setEditExpenseModalVisible(true);
-  }
+  };
 
   const onDeletePress = (id?: Expense['id']) => {
     if (!id) return;
@@ -51,7 +51,7 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
           <Style_Item
             onPress={() => onPressItem(id)}
           >
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               {description &&
                 <Label color="textSecondary" size="s">{description}</Label>
               }
@@ -60,7 +60,7 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
             {type === 'fixed' ? (
               <>
                 {paid && paid.reduce((acc, x) => acc + x, 0) >= amount ? (
-                  <FontAwesomeIcon icon='check-circle' color='primary' size='l' />
+                  <FontAwesomeIcon icon="check-circle" color="primary" size="l" />
                 ) : (
                   <CircularProgress
                     value={paid && Math.min(
@@ -93,7 +93,11 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
           </Style_Item>
         </React.Fragment>
       ))}
-      <EditExpenseModal expenseId={expenseId} visible={isEditExpenseModalVisible} setVisible={setEditExpenseModalVisible} />
+      <EditExpenseModal
+        expenseId={expenseId}
+        visible={isEditExpenseModalVisible}
+        setVisible={setEditExpenseModalVisible}
+      />
     </BaseCard>
   );
 };

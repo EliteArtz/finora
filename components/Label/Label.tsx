@@ -1,6 +1,6 @@
-import React from "react";
-import styled, {css} from "styled-components/native";
-import theme from "../../assets/style/theme";
+import React from 'react';
+import styled, { css } from 'styled-components/native';
+import theme from '../../assets/style/theme';
 
 type LabelProps = {
   children?: React.ReactNode;
@@ -38,7 +38,7 @@ const Label = ({
     $size={size}
     $weight={weight}
     $align={align}
-  >{children}</Style_Label>
+  >{children}</Style_Label>;
 };
 
 export default Label;

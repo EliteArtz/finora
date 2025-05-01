@@ -3,10 +3,10 @@ import uuid from 'react-native-uuid';
 import Modal from '../Modal/Modal';
 import Label from '../Label/Label';
 import Input from '../Input/Input';
-import React, {useEffect, useState} from 'react';
-import {useMMKVObject} from 'react-native-mmkv';
-import {Expense} from '../../types/expenses.type';
-import {Picker as RNPicker} from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { useMMKVObject } from 'react-native-mmkv';
+import { Expense } from '../../types/expenses.type';
+import { Picker as RNPicker } from '@react-native-picker/picker';
 import Picker from '../Picker/Picker';
 import RowView from '../RowView/RowView';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
@@ -39,11 +39,7 @@ const ExpenseButton = () => {
         expense.replace(',', '.')
       ),
     };
-    if (expenses?.length) {
-      setExpenses([ ...expenses, expenseObject ]);
-    } else {
-      setExpenses([ expenseObject ]);
-    }
+    setExpenses(expenses?.length ? [ ...expenses, expenseObject ] : [ expenseObject ]);
   };
 
   useEffect(() => {

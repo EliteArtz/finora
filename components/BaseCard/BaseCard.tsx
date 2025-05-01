@@ -1,5 +1,5 @@
-import React from "react";
-import styled, {css} from "styled-components/native";
+import React from 'react';
+import styled, { css } from 'styled-components/native';
 
 type BaseCardProps = {
   children?: React.ReactNode;
@@ -12,14 +12,14 @@ const Style_BaseCard = styled.View`
     padding: ${theme.size.l.px};
     border-radius: ${theme.size.s.px};
   `}
-`
+`;
 
-const BaseCard = ({children}: BaseCardProps) => {
+const BaseCard = ({ children }: BaseCardProps) => {
   return (
     <Style_BaseCard>
       {children}
     </Style_BaseCard>
-  )
-}
+  );
+};
 
 export default BaseCard;

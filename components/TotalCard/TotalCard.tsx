@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import BaseCard from '../BaseCard/BaseCard';
-import {View} from 'react-native';
+import { View } from 'react-native';
 import Label from '../Label/Label';
 import styled from 'styled-components/native';
-import {useMMKVNumber, useMMKVObject} from 'react-native-mmkv';
+import { useMMKVNumber, useMMKVObject } from 'react-native-mmkv';
 import numberCurrency from '../../helpers/numberCurrency';
-import {Expense} from '../../types/expenses.type';
+import { Expense } from '../../types/expenses.type';
 import Separator from '../Separator/Separator';
 import RowView from '../RowView/RowView';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
-import Pressable from "../Pressable/Pressable";
-import InputValueModal from "../../modals/InputValueModal/InputValueModal";
+import Pressable from '../Pressable/Pressable';
+import InputValueModal from '../../modals/InputValueModal/InputValueModal';
 
 const Style_Item = styled(Pressable)`
   flex-direction: row;
@@ -44,13 +44,13 @@ const TotalCard = () => {
       return;
     }
     const sum = expenses
-      ?.reduce((acc, expense) => (
-        acc
-        + expense.amount
-        - (expense.paid?.reduce((acc2, paid) => (
-          acc2 + paid
-        ), 0) || 0)
-      ), 0) || 0;
+    ?.reduce((acc, expense) => (
+      acc
+      + expense.amount
+      - (expense.paid?.reduce((acc2, paid) => (
+        acc2 + paid
+      ), 0) || 0)
+    ), 0) || 0;
     setRemainingValue(currentValue - sum - (savings || 0));
   }, [ currentValue, expenses, savings ]);
 
