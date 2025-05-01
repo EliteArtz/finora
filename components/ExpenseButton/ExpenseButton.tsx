@@ -88,7 +88,7 @@ const ExpenseButton = () => {
               <Label>€</Label>
             </RowView>
             <Button onPress={onSubmit} disabled={!expense}>
-              <Label align="center">OK</Label>
+              <Label align="center">Hinzufügen</Label>
             </Button>
           </Modal>
         </ScrollView>

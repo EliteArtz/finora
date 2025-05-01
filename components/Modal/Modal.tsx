@@ -34,7 +34,7 @@ const Modal = ({
         {...rest}
       >
         <Style_Backdrop onPress={rest.onRequestClose} />
-        <Style_ModalContainer behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Style_ModalContainer behavior={Platform.OS === 'ios' ? 'position' : 'height'}>
           {children}
         </Style_ModalContainer>
       </RNModal>

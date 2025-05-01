@@ -6,14 +6,14 @@ import BaseCard from '../components/BaseCard/BaseCard';
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useMMKVObject } from 'react-native-mmkv';
 import { Loan } from '../types/loans.type';
-import { useEffect } from 'react';
-import uuid from 'react-native-uuid';
+import { useState } from 'react';
 import numberCurrency from '../helpers/numberCurrency';
 import RowView from '../components/RowView/RowView';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 import Pressable from '../components/Pressable/Pressable';
 import Separator from '../components/Separator/Separator';
 import LoanButton from '../components/LoanButton/LoanButton';
+import EditLoanModal from "../modals/EditLoanModal/EditLoanModal";
 
 const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   const insets = useSafeAreaInsets();
@@ -63,29 +63,26 @@ const Style_BottomAction = styled.View`
 `;
 
 const LoanFunds = () => {
-  const [ loans, setLoans ] = useMMKVObject<Loan[]>('loans');
+  const [ loans ] = useMMKVObject<Loan[]>('loans');
+  const [ loanId, setLoanId ] = useState<Loan['id']>();
+  const [ isEditModalVisible, setIsEditModalVisible ] = useState(false);
 
-  useEffect(() => {
-    setLoans([
-      {
-        id: uuid.v4(),
-        description: 'Leihgeld an Mama',
-        lend: [ 500 ],
-        returned: [ 300 ],
-      }
-    ]);
-  }, []);
+  const onItemPress = (id: string) => {
+    setLoanId(id);
+    setIsEditModalVisible(true);
+  }
+
   return (
     <Layout01>
       <Style_ScrollView>
         <Label size="xl" weight="bold">Leihgelder</Label>
         {loans?.map(({ id, description, lend, returned }) => {
           const totalLend = lend?.reduce((acc, amount) => (acc + amount), 0) || 0;
-          const totalReturned = returned?.reduce((acc, amount) => (acc + amount), 0) || 0;
+          const totalReturned = Math.min(returned?.reduce((acc, amount) => (acc + amount), 0) || 0, totalLend);
           const rest = totalLend - totalReturned;
           return (
             <BaseCard key={id}>
-              <Style_Item>
+              <Style_Item onPress={() => onItemPress(id)}>
                 <RowView>
                   {description &&
                     <Label weight="bold">{description}</Label>
@@ -125,6 +122,7 @@ const LoanFunds = () => {
             </BaseCard>
           );
         })}
+        <EditLoanModal loanId={loanId} visible={isEditModalVisible} setVisible={setIsEditModalVisible} />
       </Style_ScrollView>
       <Style_BottomAction>
         <LoanButton />

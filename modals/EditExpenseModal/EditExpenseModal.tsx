@@ -107,15 +107,17 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
   }, [ expenseId ]);
 
   return (
-
     <Modal
       visible={visible}
       onRequestClose={onRequestClose}
     >
       <RowView style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Label size="s" color="textSecondary">
-          Eintrag bearbeiten
-        </Label>
+        <Input
+          placeholder="Beschreibung (optional)"
+          value={editExpense?.description}
+          onChangeText={(value) => onEditChange({ description: value })}
+          isFullWidth
+        />
         <Pressable
           onPress={() => onDeletePress(expenseId)}
           hitSlop={16}
@@ -123,11 +125,6 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
           <FontAwesomeIcon color="danger" size="s" icon="trash" />
         </Pressable>
       </RowView>
-      <Input
-        placeholder="Beschreibung (optional)"
-        value={editExpense?.description}
-        onChangeText={(value) => onEditChange({ description: value })}
-      />
       <RowView>
         <Input
           placeholder="Wert"

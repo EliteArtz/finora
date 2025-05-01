@@ -15,6 +15,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { Expense } from '../types/expenses.type';
 import { Platform } from 'react-native';
+import { Loan } from "../types/loans.type";
 
 const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
@@ -42,7 +43,7 @@ const Settings = () => {
     const data = JSON.parse(fileContent);
 
     Object.keys(data).forEach((key) => {
-      MMKV.set(key, typeof data[key] === 'number' || typeof data[key] === 'boolean' ? data[key] : JSON.stringify(data[key]));
+      MMKV.set(key, typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key]);
     })
   }
 
@@ -51,7 +52,7 @@ const Settings = () => {
       currentValue: MMKV.getNumber('currentValue'),
       savings: MMKV.getNumber('savings'),
       expenses: JSON.parse(MMKV.getString('expenses') || '[]') as Expense[],
-      theme: MMKV.getString('theme'),
+      loans: JSON.parse(MMKV.getString('loans') || '[]') as Loan[],
     });
     const filename = `backup_${new Date().toISOString().split('T')[0]}.json`;
     const path = FileSystem.cacheDirectory + filename;
@@ -85,7 +86,7 @@ const Settings = () => {
   }
 
   return (
-    <Layout01>
+    <Layout01 isSettings>
       <Style_Settings>
         <Label size="xl" weight="bold">Einstellungen</Label>
         <RowView>

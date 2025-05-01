@@ -44,13 +44,13 @@ const TotalCard = () => {
       return;
     }
     const sum = expenses
-    ?.reduce((acc, expense) => (
-      acc
-      + expense.amount
-      - (expense.paid?.reduce((acc2, paid) => (
-        acc2 + paid
-      ), 0) || 0)
-    ), 0) || 0;
+      ?.reduce((acc, expense) => (
+        acc
+        + expense.amount
+        - (expense.paid?.reduce((acc2, paid) => (
+          acc2 + paid
+        ), 0) || 0)
+      ), 0) || 0;
     setRemainingValue(currentValue - sum - (savings || 0));
   }, [ currentValue, expenses, savings ]);
 
@@ -86,7 +86,7 @@ const TotalCard = () => {
       >
         {numberCurrency(remainingValue)}
       </Label>
-      <Separator />
+      {(fixedExpenses || transactionExpenses || savings) && <Separator />}
       {!!fixedExpenses &&
         <RowView style={{ justifyContent: 'space-between' }}>
           <Label color="textSecondary" size="s">Fixe Kosten</Label>

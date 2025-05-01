@@ -27,9 +27,11 @@ library.add(fab, fas, far);
 
 const RootStack = createDrawerNavigator({
   initialRouteName: 'Home',
+  backBehavior: 'initialRoute',
   screenOptions: {
-    drawerType: 'back',
-    drawerStatusBarAnimation: 'slide',
+    drawerType: 'slide',
+    drawerHideStatusBarOnOpen: true,
+    swipeEdgeWidth: 50,
     headerShown: false,
   },
   screens: {
@@ -39,17 +41,17 @@ const RootStack = createDrawerNavigator({
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="home" color={focused ? 'primary' : 'textSecondary'} />
         )
-      }
+      },
     },
-    /*LoanFunds: {
+    LoanFunds: {
       screen: LoanFunds,
       options: {
         title: 'Leihgelder',
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="hand-holding-dollar" color={focused ? 'primary' : 'textSecondary'} />
         )
-      }
-    },*/
+      },
+    },
     Settings: {
       screen: Settings,
       options: {

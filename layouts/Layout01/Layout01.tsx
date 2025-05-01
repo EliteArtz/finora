@@ -6,6 +6,11 @@ import Button from '../../components/Button/Button';
 import { DrawerNavigationProp, } from '@react-navigation/drawer';
 import FontAwesomeIcon from '../../components/FontAwesomeIcon/FontAwesomeIcon';
 
+type Layout01Props = {
+  children?: React.ReactNode
+  isSettings?: boolean
+}
+
 const Style_SafeView = styled.View`
   display: flex;
   flex: 1;
@@ -34,9 +39,13 @@ const Style_TopActions = styled.View`
   `}
 `;
 
-const Layout01 = ({ children }: { children?: React.ReactNode }) => {
+const Layout01 = ({ children, isSettings=false }: Layout01Props) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
+
+  const onNavigatePress = () => {
+    navigation.navigate(isSettings ? 'Home' : 'Settings')
+  }
 
   return (
     <Style_SafeView
@@ -51,8 +60,8 @@ const Layout01 = ({ children }: { children?: React.ReactNode }) => {
           <Button onPress={navigation.openDrawer}>
             <FontAwesomeIcon color="primary" icon="bars" />
           </Button>
-          <Button onPress={() => navigation.navigate('Settings')}>
-            <FontAwesomeIcon color="primary" icon="gear" />
+          <Button onPress={onNavigatePress}>
+            <FontAwesomeIcon color="primary" icon={isSettings ? 'home' : 'gear'} />
           </Button>
         </Style_TopActions>
         {children}
