@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components/native';
 import { Modal as RNModal, ModalProps, Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Style_Backdrop = styled.Pressable`
   position: absolute;
@@ -8,7 +9,7 @@ const Style_Backdrop = styled.Pressable`
   background-color: rgba(0, 0, 0, 0.4);
 `;
 
-const Style_ModalContainer = styled.KeyboardAvoidingView`
+const Style_ModalContainer = styled.View`
   align-self: stretch;
   margin-block: auto;
   ${({ theme }) => css`
@@ -20,12 +21,19 @@ const Style_ModalContainer = styled.KeyboardAvoidingView`
   `}
 `;
 
+const Style_KeyboardAvoidingView = styled.KeyboardAvoidingView.attrs({
+  behavior: Platform.OS === 'ios' ? 'padding' : 'height'
+})`
+  flex: 1;
+`
+
 const Modal = ({
   children,
   animationType = 'fade',
   transparent = true,
   ...rest
 }: ModalProps) => {
+  const insets = useSafeAreaInsets();
   return (
     <View>
       <RNModal
@@ -34,9 +42,18 @@ const Modal = ({
         {...rest}
       >
         <Style_Backdrop onPress={rest.onRequestClose} />
-        <Style_ModalContainer behavior={Platform.OS === 'ios' ? 'position' : 'height'}>
-          {children}
-        </Style_ModalContainer>
+        <Style_KeyboardAvoidingView
+          style={{
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          }}
+        >
+          <Style_ModalContainer>
+            {children}
+          </Style_ModalContainer>
+        </Style_KeyboardAvoidingView>
       </RNModal>
     </View>
   );

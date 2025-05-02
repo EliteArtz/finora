@@ -32,7 +32,7 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
   `}
 `
 
-const EditLoanModal = ({loanId, visible, setVisible}: EditELoanModalProps) => {
+const EditLoanModal = ({ loanId, visible, setVisible }: EditELoanModalProps) => {
   const [ loans, setLoans ] = useMMKVObject<Loan[]>('loans');
   const [ editLoanValue, setEditLoanValue ] = useState<string>();
   const [ editReturnValue, setEditReturnValue ] = useState<string>();
@@ -50,7 +50,7 @@ const EditLoanModal = ({loanId, visible, setVisible}: EditELoanModalProps) => {
   };
 
   const onDeleteLoanPress = (index: number) => {
-    if(!editLoan) return;
+    if (!editLoan) return;
     const newLend = editLoan?.lend.filter((_, i) => i !== index);
     setEditLoan({
       ...editLoan,
@@ -59,7 +59,7 @@ const EditLoanModal = ({loanId, visible, setVisible}: EditELoanModalProps) => {
   }
 
   const onDeleteReturnPress = (index: number) => {
-    if(!editLoan || !editLoan.returned) return;
+    if (!editLoan || !editLoan.returned) return;
     const newReturned = editLoan?.returned.filter((_, i) => i !== index);
     setEditLoan({
       ...editLoan,
@@ -136,7 +136,7 @@ const EditLoanModal = ({loanId, visible, setVisible}: EditELoanModalProps) => {
           <FontAwesomeIcon color="danger" size="s" icon="trash" />
         </Pressable>
       </RowView>
-      <Separator />
+      <Separator space="none" />
       <Label size="s" color="danger">Geliehen</Label>
       <Style_ScrollView>
         {editLoan?.lend.map((loan, index) => (
@@ -152,18 +152,18 @@ const EditLoanModal = ({loanId, visible, setVisible}: EditELoanModalProps) => {
       </Style_ScrollView>
       <RowView>
         <Input
-          placeholder='Wert in EUR'
-          keyboardType='decimal-pad'
+          placeholder="Wert in EUR"
+          keyboardType="decimal-pad"
           value={editLoanValue}
           onChangeText={setEditLoanValue}
           onSubmitEditing={onSubmitLendEdit}
           isFullWidth
         />
         <Pressable onPress={onSubmitLendEdit}>
-          <FontAwesomeIcon icon='plus' color='primary' />
+          <FontAwesomeIcon icon="plus" color="primary" />
         </Pressable>
       </RowView>
-      <Separator />
+      <Separator space="none" />
       <Label size="s" color="success">Zurückgezahlt</Label>
       <Style_ScrollView>
         {editLoan?.returned?.map((returned, index) => (
@@ -179,15 +179,15 @@ const EditLoanModal = ({loanId, visible, setVisible}: EditELoanModalProps) => {
       </Style_ScrollView>
       <RowView>
         <Input
-          placeholder='Wert in EUR'
-          keyboardType='decimal-pad'
+          placeholder="Wert in EUR"
+          keyboardType="decimal-pad"
           value={editReturnValue}
           onChangeText={setEditReturnValue}
           onSubmitEditing={onSubmitReturnEdit}
           isFullWidth
         />
         <Pressable onPress={onSubmitReturnEdit}>
-          <FontAwesomeIcon icon='plus' color='primary' />
+          <FontAwesomeIcon icon="plus" color="primary" />
         </Pressable>
       </RowView>
       <Button onPress={onSubmitEdit} disabled={!editLoan?.lend.length}><Label align="center">OK</Label></Button>

@@ -39,7 +39,7 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
   `}
 `
 
-const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProps) => {
+const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalProps) => {
   const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
   const [ editPaidValue, setEditPaidValue ] = useState<string>();
   const [ editExpense, setEditExpense ] = useState<EditExpenseProps>();
@@ -56,7 +56,7 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
   };
 
   const onDeletePaidPress = (index: number) => {
-    if(!editExpense) return;
+    if (!editExpense) return;
     const newPaid = editExpense?.paid?.filter((_, i) => i !== index);
     setEditExpense({
       ...editExpense,
@@ -87,7 +87,12 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
   }
 
   const onSubmitPaidEdit = () => {
-    editPaidValue && onEditChange({ paid: [ ...(editExpense?.paid || []), parseFloat(editPaidValue?.replace(',', '.')) ] })
+    editPaidValue && onEditChange({
+      paid: [ ...(editExpense?.paid || []), parseFloat(editPaidValue?.replace(
+        ',',
+        '.'
+      )) ]
+    })
     setEditPaidValue(undefined);
   }
 
@@ -130,19 +135,19 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
           placeholder="Wert"
           value={editExpense?.amount}
           onChangeText={(value) => onEditChange({ amount: value })}
-          keyboardType='decimal-pad'
+          keyboardType="decimal-pad"
           isFullWidth
         />
         <Label>€</Label>
       </RowView>
       {editExpense?.type === 'fixed' && (
         <>
-          <Separator />
+          <Separator space="none" />
           <Label size="s" color="textSecondary">Bezahlt</Label>
           <Style_ScrollView>
             {editExpense.paid?.map((paid, index) => (
               <RowView key={index} style={{ justifyContent: 'space-between' }}>
-                <Label color='textPrimary' weight='bold'>{numberCurrency(paid)}</Label>
+                <Label color="textPrimary" weight="bold">{numberCurrency(paid)}</Label>
                 <Pressable onPress={() => onDeletePaidPress(index)}>
                   <FontAwesomeIcon color="danger" size="l" icon="xmark" />
                 </Pressable>
@@ -152,13 +157,14 @@ const EditExpenseModal = ({expenseId, visible, setVisible}: EditExpenseModalProp
           <RowView>
             <Input
               value={editPaidValue}
-              placeholder='Wert in EUR'
-              keyboardType='decimal-pad'
+              placeholder="Wert in EUR"
+              keyboardType="decimal-pad"
               onChangeText={setEditPaidValue}
               onSubmitEditing={onSubmitPaidEdit}
-              isFullWidth />
+              isFullWidth
+            />
             <Pressable onPress={onSubmitPaidEdit}>
-              <FontAwesomeIcon color='primary' size='l' icon='add' />
+              <FontAwesomeIcon color="primary" size="l" icon="add" />
             </Pressable>
           </RowView>
         </>

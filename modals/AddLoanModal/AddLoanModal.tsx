@@ -32,7 +32,7 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
   `}
 `
 
-const AddLoanModal = ({isVisible, setIsVisible}: AddLoanModalProps) => {
+const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
   const [ draftLoan, setDraftLoan ] = useState<string>();
   const [ description, setDescription ] = useState<string>();
   const [ draftLoans, setDraftLoans ] = useState<number[]>();
@@ -46,7 +46,7 @@ const AddLoanModal = ({isVisible, setIsVisible}: AddLoanModalProps) => {
   const onAddDraftLoanPress = () => {
     if (!draftLoan) return;
     const convertedLoan = parseFloat(draftLoan.replace(',', '.'));
-    setDraftLoans([...(draftLoans || []), convertedLoan]);
+    setDraftLoans([ ...(draftLoans || []), convertedLoan ]);
     setDraftLoan(undefined);
   }
 
@@ -79,7 +79,7 @@ const AddLoanModal = ({isVisible, setIsVisible}: AddLoanModalProps) => {
             value={description}
             onChangeText={setDescription}
           />
-          <Separator />
+          <Separator space="none" />
           <Label size="s" color="danger">Geliehen</Label>
           <Style_ScrollView>
             {draftLoans?.map((loan, index) => (
@@ -95,15 +95,15 @@ const AddLoanModal = ({isVisible, setIsVisible}: AddLoanModalProps) => {
           </Style_ScrollView>
           <RowView>
             <Input
-              placeholder='Wert in EUR'
-              keyboardType='decimal-pad'
+              placeholder="Wert in EUR"
+              keyboardType="decimal-pad"
               value={draftLoan}
               onChangeText={setDraftLoan}
               onSubmitEditing={onAddDraftLoanPress}
               isFullWidth
             />
             <Pressable onPress={onAddDraftLoanPress}>
-              <FontAwesomeIcon icon='plus' color='primary' />
+              <FontAwesomeIcon icon="plus" color="primary" />
             </Pressable>
           </RowView>
           <Button onPress={onSubmitPress} disabled={!draftLoans?.length}>
