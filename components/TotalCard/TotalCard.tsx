@@ -24,34 +24,25 @@ const TotalCard = () => {
   const [ remainingValue, setRemainingValue ] = useMMKVNumber('remainingValue');
   const [ isModalVisible, setModalVisible ] = useState(false);
   const [ savings ] = useMMKVNumber('savings');
-
-  const fixedExpenses = expenses?.reduce((
-    acc,
-    expense
-  ) => expense.type === 'fixed' ? acc + expense.amount - (
-    expense.paid?.reduce((acc2, paid) => (
-      acc2 + paid
-    ), 0) || 0
-  ) : acc, 0);
   const transactionExpenses = expenses?.reduce((
     acc,
     expense
   ) => expense.type === 'transaction' ? acc + expense.amount : acc, 0);
+  const fixedExpenses = expenses?.reduce((
+    acc,
+    expense
+  ) => expense.type === 'fixed' ? acc + expense.amount - Math.min(
+    expense.paid?.reduce((acc2, paid) => (acc2 + paid), 0) || 0,
+    expense.amount
+  ) : acc, 0);
 
   useEffect(() => {
     if (!currentValue) {
       setRemainingValue(undefined);
       return;
     }
-    const sum = expenses
-      ?.reduce((acc, expense) => (
-        acc
-        + expense.amount
-        - (expense.paid?.reduce((acc2, paid) => (
-          acc2 + paid
-        ), 0) || 0)
-      ), 0) || 0;
-    setRemainingValue(currentValue - sum - (savings || 0));
+    const sum = (transactionExpenses || 0) + (fixedExpenses || 0) + (savings || 0);
+    setRemainingValue(currentValue - sum);
   }, [ currentValue, expenses, savings ]);
 
   return (

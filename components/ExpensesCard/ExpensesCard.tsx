@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import Label from '../Label/Label';
 import BaseCard from '../BaseCard/BaseCard';
@@ -11,6 +11,9 @@ import Separator from '../Separator/Separator';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 import Pressable from '../Pressable/Pressable';
 import EditExpenseModal from '../../modals/EditExpenseModal/EditExpenseModal';
+import Modal from "../Modal/Modal";
+import RowView from "../RowView/RowView";
+import Button from "../Button/Button";
 
 type ExpensesCardProps = {
   type: Expense['type'];
@@ -26,8 +29,10 @@ const Style_Item = styled(Pressable)`
 const ExpensesCard = ({ type }: ExpensesCardProps) => {
   const theme = useTheme();
   const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
-  const [ expenseId, setExpenseId ] = React.useState<Expense['id']>();
-  const [ isEditExpenseModalVisible, setEditExpenseModalVisible ] = React.useState(false);
+  const [ expenseId, setExpenseId ] = useState<Expense['id']>();
+  const expense = expenses?.find(expense => expense.id === expenseId);
+  const [ isEditExpenseModalVisible, setEditExpenseModalVisible ] = useState(false);
+  const [ isInfoModalVisible, setInfoModalVisible ] = useState(false);
   const filteredExpenses = expenses?.filter(expense => expense.type === type);
 
   const onPressItem = (id: string) => {
@@ -42,6 +47,11 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
     setEditExpenseModalVisible(false);
   };
 
+  const onInfoPress = (id?: Expense['id']) => {
+    if (!id) return;
+    setExpenseId(id);
+    setInfoModalVisible(true);
+  }
 
   return (
     <BaseCard>
@@ -58,26 +68,26 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
               <Label weight="bold">{numberCurrency(amount)}</Label>
             </View>
             {type === 'fixed' ? (
-              <>
-                {paid && paid.reduce((acc, x) => acc + x, 0) >= amount ? (
-                  <FontAwesomeIcon icon="check-circle" color="primary" size="l" />
-                ) : (
-                  <CircularProgress
-                    value={paid && Math.min(
-                      paid.reduce((acc, x) => acc + x, 0),
-                      amount
-                    ) || 0}
-                    duration={1000}
-                    radius={12}
-                    maxValue={amount}
-                    inActiveStrokeWidth={24}
-                    activeStrokeWidth={10}
-                    showProgressValue={false}
-                    circleBackgroundColor={theme.color.background}
-                    inActiveStrokeColor={theme.color.background}
-                  />
-                )}
-              </>
+                <Pressable hitSlop={10} onPress={() => onInfoPress(id)}>
+                  {paid && paid.reduce((acc, x) => acc + x, 0) >= amount ? (
+                    <FontAwesomeIcon icon="check-circle" color="primary" size="l" />
+                  ) : (
+                    <CircularProgress
+                      value={paid && Math.min(
+                        paid.reduce((acc, x) => acc + x, 0),
+                        amount
+                      ) || 0}
+                      duration={1000}
+                      radius={12}
+                      maxValue={amount}
+                      inActiveStrokeWidth={24}
+                      activeStrokeWidth={10}
+                      showProgressValue={false}
+                      circleBackgroundColor={theme.color.background}
+                      inActiveStrokeColor={theme.color.background}
+                    />
+                  )}
+                </Pressable>
             ) : (
               <Pressable
                 hitSlop={10}
@@ -98,6 +108,37 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
         visible={isEditExpenseModalVisible}
         setVisible={setEditExpenseModalVisible}
       />
+
+      <Modal
+        visible={isInfoModalVisible}
+        onRequestClose={() => setInfoModalVisible(false)}
+      >
+        {expense?.description &&
+          <Label>{expense.description}</Label>
+        }
+        <RowView style={{justifyContent: 'space-between'}}>
+          <Label color="textSecondary" size="s">Bezahlt</Label>
+          <Label color="textSecondary" size="s" weight='bold'>{numberCurrency(
+            expense?.paid && Math.min(
+              expense.paid.reduce((acc, x) => acc + x, 0),
+              expense.amount
+            ) || 0
+          )}</Label>
+        </RowView>
+        <RowView style={{justifyContent: 'space-between'}}>
+          <Label color="textSecondary" size="s">Restbetrag</Label>
+          <Label color="textSecondary" size="s" weight='bold'>{numberCurrency(
+            expense ?
+              expense.amount - (Math.min(
+                expense.paid?.reduce((acc, x) => acc + x, 0) || 0,
+                expense.amount
+              ))
+            : 0
+          )
+          }</Label>
+        </RowView>
+        <Button onPress={() => setInfoModalVisible(false)}><Label>OK</Label></Button>
+      </Modal>
     </BaseCard>
   );
 };
