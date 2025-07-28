@@ -3,20 +3,21 @@ import styled, { css } from 'styled-components/native';
 
 type BaseCardProps = {
   children?: React.ReactNode;
+  padding?: string;
 }
 
-const Style_BaseCard = styled.View`
+const Style_BaseCard = styled.View<{$padding?: BaseCardProps['padding']}>`
   display: flex;
-  ${({ theme }) => css`
+  ${({ theme, $padding }) => css`
     background-color: ${theme.color.surface};
-    padding: ${theme.size.l.px};
+    padding: ${$padding ? $padding : theme.size.l.px};
     border-radius: ${theme.size.s.px};
   `}
 `;
 
-const BaseCard = ({ children }: BaseCardProps) => {
+const BaseCard = ({ children, padding }: BaseCardProps) => {
   return (
-    <Style_BaseCard>
+    <Style_BaseCard $padding={padding}>
       {children}
     </Style_BaseCard>
   );

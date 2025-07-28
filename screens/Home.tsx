@@ -1,10 +1,9 @@
 import React from 'react';
 import Layout01 from '../layouts/Layout01/Layout01';
-import styled, {css} from 'styled-components/native';
-import Label from '../components/Label/Label';
+import styled, { css } from 'styled-components/native';
 import TotalCard from '../components/TotalCard/TotalCard';
 import ExpensesCard from '../components/ExpensesCard/ExpensesCard';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ExpenseButton from '../components/ExpenseButton/ExpenseButton';
 import SavingsCard from "../components/SavingsCard/SavingsCard";
 
@@ -30,8 +29,7 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   const insets = useSafeAreaInsets();
   return {
     contentContainerStyle: {
-      gap: theme.size.l.value * 16,
-      paddingBottom: insets.bottom,
+      gap: theme.size.l.value * 16, paddingBottom: insets.bottom,
     }
   };
 })`
@@ -44,30 +42,21 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
 `;
 
 const Home = () => {
-
-  return (
-    <Layout01>
+  return (<Layout01>
       <Style_ScrollView>
-        <TotalCard />
-        <SavingsCard />
-        <Style_CardContainer>
-          <Label size="s" color="textSecondary">
-            Fixe Kosten
-          </Label>
-          <ExpensesCard type="fixed" />
-        </Style_CardContainer>
-        <Style_CardContainer>
-          <Label size="s" color="textSecondary">
-            Buchungen
-          </Label>
-          <ExpensesCard type="transaction" />
-        </Style_CardContainer>
+          <TotalCard />
+          <SavingsCard />
+          <Style_CardContainer>
+            <ExpensesCard type="fixed" />
+          </Style_CardContainer>
+          <Style_CardContainer>
+            <ExpensesCard type="transaction" />
+          </Style_CardContainer>
       </Style_ScrollView>
       <Style_BottomAction>
         <ExpenseButton />
       </Style_BottomAction>
-    </Layout01>
-  );
+    </Layout01>);
 };
 
 export default Home;

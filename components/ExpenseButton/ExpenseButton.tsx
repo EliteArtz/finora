@@ -51,9 +51,9 @@ const ExpenseButton = () => {
     <>
       <Button type="primary" padding="l" onPress={onPress}>
         <FontAwesomeIcon
-          color="textPrimary"
+          color="surface"
           size="l"
-          icon="pen"
+          icon="plus"
         />
       </Button>
       <View>

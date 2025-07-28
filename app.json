@@ -24,6 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#e3eae8"
       },
+      "edgeToEdgeEnabled": true,
       "package": "eu.jbrunn.finora",
       "userInterfaceStyle": "automatic"
     },
@@ -31,15 +32,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font",
-      [
-        "expo-navigation-bar",
-        {
-          "position": "absolute",
-          "backgroundColor": "#00000000",
-          "behavior": "sticky-immersive"
-        }
-      ]
+      "expo-font"
     ]
   }
 }

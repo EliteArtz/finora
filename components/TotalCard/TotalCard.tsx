@@ -24,17 +24,13 @@ const TotalCard = () => {
   const [ remainingValue, setRemainingValue ] = useMMKVNumber('remainingValue');
   const [ isModalVisible, setModalVisible ] = useState(false);
   const [ savings ] = useMMKVNumber('savings');
-  const transactionExpenses = expenses?.reduce((
-    acc,
-    expense
-  ) => expense.type === 'transaction' ? acc + expense.amount : acc, 0);
-  const fixedExpenses = expenses?.reduce((
-    acc,
-    expense
-  ) => expense.type === 'fixed' ? acc + expense.amount - Math.min(
-    expense.paid?.reduce((acc2, paid) => (acc2 + paid), 0) || 0,
-    expense.amount
-  ) : acc, 0);
+  const transactionExpenses = expenses?.filter(expense => expense.type === 'transaction')
+    ?.reduce((acc, expense) => acc + expense.amount, 0) || undefined;
+  const fixedExpenses = expenses?.filter(expense => expense.type === 'fixed')
+    .reduce((acc, expense) => acc + expense.amount - Math.min(expense.paid?.reduce(
+      (acc2, paid) => (acc2 + paid),
+      0
+    ) || 0, expense.amount), 0) || undefined;
 
   useEffect(() => {
     if (!currentValue) {
@@ -45,65 +41,58 @@ const TotalCard = () => {
     setRemainingValue(currentValue - sum);
   }, [ currentValue, expenses, savings ]);
 
-  return (
-    <BaseCard>
-      <Style_Item onPress={() => setModalVisible(true)}>
-        <View style={{ flex: 1 }}>
-          <Label color="textSecondary" size="s">
-            Aktueller Saldo
-          </Label>
-          <Label color="textSecondary" weight="bold">
-            {numberCurrency(currentValue)}
-          </Label>
-        </View>
-        <FontAwesomeIcon
-          color="textSecondary"
-          icon="pen"
-        />
-        <InputValueModal
-          label="Aktueller Saldo"
-          isVisible={isModalVisible}
-          setIsVisible={setModalVisible}
-          value={currentValue}
-          setValue={setCurrentValue}
-        />
-      </Style_Item>
-      <Separator />
-      <Label color="textSecondary" size="s">Restsaldo</Label>
-      <Label
-        color={!remainingValue ? 'textPrimary' : remainingValue < 0 ? 'danger' : 'primary'}
-        weight="bold"
-        size="xxl"
-      >
-        {numberCurrency(remainingValue)}
+  return (<BaseCard>
+    <Style_Item onPress={() => setModalVisible(true)}>
+      <View style={{ flex: 1 }}>
+        <Label color="textSecondary" size="s">
+          Aktueller Saldo
+        </Label>
+        <Label color="textSecondary" weight="bold">
+          {numberCurrency(currentValue)}
+        </Label>
+      </View>
+      <FontAwesomeIcon
+        color="textSecondary"
+        icon="pen"
+      />
+      <InputValueModal
+        label="Aktueller Saldo"
+        isVisible={isModalVisible}
+        setIsVisible={setModalVisible}
+        value={currentValue}
+        setValue={setCurrentValue}
+      />
+    </Style_Item>
+    <Separator />
+    <Label color="textSecondary" size="s">Restsaldo</Label>
+    <Label
+      color={!remainingValue ? 'textPrimary' : remainingValue < 0 ? 'danger' : 'primary'}
+      weight="bold"
+      size="xxl"
+    >
+      {numberCurrency(remainingValue)}
+    </Label>
+    {(fixedExpenses || transactionExpenses || savings) && <Separator />}
+    {fixedExpenses && <RowView style={{ justifyContent: 'space-between' }}>
+      <Label color="textSecondary" size="s">Fixe Kosten</Label>
+      <Label color="textSecondary" size="s" weight="bold">
+        {numberCurrency(fixedExpenses)}
       </Label>
-      {(fixedExpenses || transactionExpenses || savings) && <Separator />}
-      {!!fixedExpenses &&
-        <RowView style={{ justifyContent: 'space-between' }}>
-          <Label color="textSecondary" size="s">Fixe Kosten</Label>
-          <Label color="textSecondary" size="s" weight="bold">
-            {numberCurrency(fixedExpenses)}
-          </Label>
-        </RowView>
-      }
-      {!!transactionExpenses &&
-        <RowView style={{ justifyContent: 'space-between' }}>
-          <Label color="textSecondary" size="s">Buchungen</Label>
-          <Label color="textSecondary" size="s" weight="bold">
-            {numberCurrency(transactionExpenses)}
-          </Label>
-        </RowView>
-      }
-      {!!savings &&
-        <RowView style={{ justifyContent: 'space-between' }}>
-          <Label color="textSecondary" size="s">Ersparnisse</Label>
-          <Label color="textSecondary" size="s" weight="bold">
-            {numberCurrency(savings)}
-          </Label>
-        </RowView>
-      }
-    </BaseCard>
-  );
+    </RowView>}
+
+    {transactionExpenses && <RowView style={{ justifyContent: 'space-between' }}>
+      <Label color="textSecondary" size="s">Buchungen</Label>
+      <Label color="textSecondary" size="s" weight="bold">
+        {numberCurrency(transactionExpenses)}
+      </Label>
+    </RowView>}
+    {savings && <RowView style={{ justifyContent: 'space-between' }}>
+      <Label color="textSecondary" size="s">Ersparnisse</Label>
+      <Label color="textSecondary" size="s" weight="bold">
+        {numberCurrency(savings)}
+      </Label>
+    </RowView>}
+  </BaseCard>);
 };
 
 export default TotalCard;

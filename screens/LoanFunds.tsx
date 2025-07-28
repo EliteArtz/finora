@@ -75,7 +75,7 @@ const LoanFunds = () => {
   return (
     <Layout01>
       <Style_ScrollView>
-        <Label size="xl" weight="bold">Leihgelder</Label>
+        <Label size="xl" weight="bold">Schulden</Label>
         {loans?.map(({ id, description, lend, returned }) => {
           const totalLend = lend?.reduce((acc, amount) => (acc + amount), 0) || 0;
           const totalReturned = Math.min(returned?.reduce((acc, amount) => (acc + amount), 0) || 0, totalLend);

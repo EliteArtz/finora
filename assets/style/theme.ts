@@ -50,9 +50,9 @@ const lightColors = {
   color: {
     background: '#e3eae8',
     surface: '#f8fffd',
+    surfaceActive: '#eaf1ef',
     primary: '#10B981',
-    primaryHover: '#059669',
-    primaryActive: '#047857',
+    primaryActive: '#0fad78',
     textPrimary: '#111827',
     textSecondary: '#6B7280',
     success: '#10B981',
@@ -66,9 +66,9 @@ const darkColors = {
   color: {
     background: '#0f1614',
     surface: '#1c1f1d',
+    surfaceActive: '#161817',
     primary: '#10B981',
-    primaryHover: '#059669',
-    primaryActive: '#047857',
+    primaryActive: '#059669',
     textPrimary: '#F9FAFB',
     textSecondary: '#9CA3AF',
     success: '#10B981',
