@@ -1,9 +1,9 @@
 import Layout01 from '../layouts/Layout01';
 import Button from '../components/Button/Button';
 import {useMMKV, useMMKVString} from 'react-native-mmkv';
-import styled, {css} from 'styled-components/native';
+import styled, { css, useTheme } from 'styled-components/native';
 import Label from '../components/Label/Label';
-import {Picker as RNPicker} from '@react-native-picker/picker';
+import { Picker as RNPicker, PickerItemProps } from '@react-native-picker/picker';
 import Picker from '../components/Picker/Picker';
 import Separator from '../components/Separator/Separator';
 import RowView from '../components/RowView/RowView';
@@ -29,8 +29,16 @@ const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
 
 const Settings = () => {
   const MMKV = useMMKV();
+  const themeObj = useTheme();
   const [ isConfirmModalVisible, setConfirmModalVisible ] = useState(false);
   const [ theme, setTheme ] = useMMKVString('theme');
+  const props: Partial<PickerItemProps> = {
+    color: themeObj.color.textPrimary,
+    style: {
+      width: '100%',
+      backgroundColor: themeObj.color.background,
+    }
+  }
 
   const importData = async () => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -97,8 +105,8 @@ const Settings = () => {
             selectedValue={theme}
             onValueChange={(value) => setTheme(value as string)}
           >
-            <RNPicker.Item value="light" label="Hell" />
-            <RNPicker.Item value="dark" label="Dunkel" />
+            <RNPicker.Item value="light" label="Hell" {...props} />
+            <RNPicker.Item value="dark" label="Dunkel" {...props} />
           </Picker>
         </RowView>
         <Separator />
