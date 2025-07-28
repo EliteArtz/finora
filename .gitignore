@@ -40,3 +40,5 @@ yarn-error.*
 .expo
 android
 ios
+
+finora-*.json

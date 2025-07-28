@@ -17,7 +17,10 @@
     "ios": {
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,
-      "bundleIdentifier": "eu.jbrunn.finora"
+      "bundleIdentifier": "eu.jbrunn.finora",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,6 +36,12 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7eb97665-b80a-424c-83e2-ee9b15569992"
+      }
+    },
+    "owner": "eliteartz"
   }
 }
