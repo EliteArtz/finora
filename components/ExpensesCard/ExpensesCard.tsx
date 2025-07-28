@@ -22,7 +22,6 @@ type ExpensesCardProps = {
 
 const ExpensesCard = ({ type }: ExpensesCardProps) => {
   const theme = useTheme();
-
   const [ expenses ] = useMMKVObject<Expense[]>('expenses');
   const [ expenseId, setExpenseId ] = useState<Expense['id']>();
   const expense = useMemo(() => expenses?.find(expense => expense.id === expenseId), [ expenseId, expenses ]);
@@ -36,6 +35,7 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
       paid
     }) => {
       const reducedPaid = paid && paid.reduce((acc, x) => acc + x, 0) || 0;
+      const color = theme.color.background;
       return {
         id,
         amount,
@@ -51,11 +51,11 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
             inActiveStrokeWidth={24}
             activeStrokeWidth={10}
             showProgressValue={false}
-            circleBackgroundColor={theme.color.background}
-            inActiveStrokeColor={theme.color.background}
+            circleBackgroundColor={color}
+            inActiveStrokeColor={color}
           />),
       }
-    }), [ expenses ]);
+    }), [ expenses, theme ]);
 
 
   return (<BaseCard>

@@ -1,5 +1,5 @@
 import React from 'react';
-import Layout01 from '../layouts/Layout01/Layout01';
+import Layout01 from '../layouts/Layout01';
 import styled, { css } from 'styled-components/native';
 import TotalCard from '../components/TotalCard/TotalCard';
 import ExpensesCard from '../components/ExpensesCard/ExpensesCard';

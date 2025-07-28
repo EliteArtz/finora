@@ -8,6 +8,7 @@ type BaseCardProps = {
 
 const Style_BaseCard = styled.View<{$padding?: BaseCardProps['padding']}>`
   display: flex;
+  position: relative;
   ${({ theme, $padding }) => css`
     background-color: ${theme.color.surface};
     padding: ${$padding ? $padding : theme.size.l.px};

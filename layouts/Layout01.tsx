@@ -2,9 +2,9 @@ import React from 'react';
 import styled, { css } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
-import Button from '../../components/Button/Button';
+import Button from '../components/Button/Button';
 import { DrawerNavigationProp, } from '@react-navigation/drawer';
-import FontAwesomeIcon from '../../components/FontAwesomeIcon/FontAwesomeIcon';
+import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 
 type Layout01Props = {
   children?: React.ReactNode

@@ -1,17 +1,25 @@
 import { ViewProps } from 'react-native';
 import styled, { css } from 'styled-components/native';
+import theme from "../../assets/style/theme";
+import React from "react";
 
-const Style_RowView = styled.View`
+type RowViewProps = ViewProps & {
+  gap?: keyof typeof theme.size;
+  justifyContent?: React.CSSProperties['justifyContent']
+}
+
+const Style_RowView = styled.View<{ $gap: NonNullable<RowViewProps['gap']>; $justifyContent: NonNullable<RowViewProps['justifyContent']> }>`
   flex-direction: row;
   align-items: center;
-  ${({ theme }) => css`
-    gap: ${theme.size.m.px}
+  ${({ theme, $gap, $justifyContent }) => css`
+    justify-content: ${$justifyContent};
+    gap: ${theme.size[$gap].px}
   `}
 `;
 
-const RowView = ({ ...rest }: ViewProps) => {
+const RowView = ({ gap='m', justifyContent='flex-start', ...rest }: RowViewProps) => {
   return (
-    <Style_RowView {...rest} />
+    <Style_RowView {...rest} $gap={gap} $justifyContent={justifyContent} />
   );
 };
 

@@ -1,4 +1,4 @@
-import Layout01 from '../layouts/Layout01/Layout01';
+import Layout01 from '../layouts/Layout01';
 import Button from '../components/Button/Button';
 import {useMMKV, useMMKVString} from 'react-native-mmkv';
 import styled, {css} from 'styled-components/native';
