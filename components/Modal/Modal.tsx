@@ -39,6 +39,7 @@ const Modal = ({
       <RNModal
         animationType={animationType}
         transparent={transparent}
+        statusBarTranslucent
         {...rest}
       >
         <Style_Backdrop onPress={rest.onRequestClose} />

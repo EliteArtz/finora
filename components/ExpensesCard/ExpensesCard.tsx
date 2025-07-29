@@ -68,7 +68,6 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
     })))
   }, []);
 
-
   return (<BaseCard>
     <Label color="primary" size="m" weight="bold">{type === 'fixed' ? 'Fixe Kosten' : 'Buchungen'}</Label>
     <GestureHandlerRootView>

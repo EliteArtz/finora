@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { ThemeProvider } from 'styled-components/native';
-import theme, { darkTheme } from '../assets/style/theme';
+import lightTheme, { darkTheme } from '../assets/style/theme';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
@@ -74,7 +74,7 @@ const App = () => {
   const [ selectedTheme ] = useMMKVString('theme') || [ useColorScheme() ];
   const scheme = selectedTheme === 'dark' ? 'dark' : 'light';
   const invScheme = selectedTheme === 'dark' ? 'light' : 'dark';
-  const themeObject = selectedTheme === 'dark' ? darkTheme : theme;
+  const themeObject = selectedTheme === 'dark' ? darkTheme : lightTheme;
   const navigatorTheme: ComponentProps<typeof Navigation>['theme'] = {
     colors: {
       primary: themeObject.color.primary,
@@ -111,7 +111,7 @@ const App = () => {
 
   useEffect(() => {
     Appearance.setColorScheme(scheme);
-    if (Platform.OS == 'android') {
+    if (Platform.OS === 'android') {
       NavigationBar.setButtonStyleAsync(scheme);
     }
   }, [ scheme, invScheme ]);

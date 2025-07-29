@@ -32,6 +32,8 @@ const InfoExpenseModal = ({
   setIsVisible,
   setIsEditModalVisible
 }: InfoExpenseModalProps) => {
+  const paid = expense?.paid && Math.min(expense.paid.reduce((acc, x) => acc + x, 0), expense.amount)
+  const rest = expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x, 0) || 0, expense.amount));
   const onRequestClose = () => {
     setIsVisible(false);
   }
@@ -76,26 +78,24 @@ const InfoExpenseModal = ({
         >{numberCurrency(expense?.amount || 0)}</Label>
       </RowView>
 
-      {expense?.paid && <><Separator /><RowView justifyContent="space-between">
-        <View style={{ flex: 1 }}>
+      {paid !== undefined && <><Separator /><RowView justifyContent="space-between">
+        <View>
           <Label color="success" size="s" align="left">Bezahlt</Label>
           <Label
             color="textPrimary"
             size="s"
             weight="bold"
             align="left"
-          >{numberCurrency(Math.min(expense.paid.reduce((acc, x) => acc + x, 0), expense.amount) || 0)}</Label>
+          >{numberCurrency(paid)}</Label>
         </View>
-        <View style={{ flex: 1 }}>
+        <View>
           <Label color="danger" size="s" align="right">Restbetrag</Label>
           <Label
             color="textPrimary"
             size="s"
             weight="bold"
             align="right"
-          >{numberCurrency(expense ?
-            expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x, 0) || 0, expense.amount)) :
-            0)}</Label>
+          >{numberCurrency(rest)}</Label>
         </View>
       </RowView></>}
     </Style_AmountView>

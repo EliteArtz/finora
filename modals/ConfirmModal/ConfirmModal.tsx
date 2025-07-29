@@ -15,7 +15,7 @@ const ConfirmModal = ({ heading, buttons, isVisible, setIsVisible }: ConfirmModa
   const onRequestClose = () => {
     setIsVisible(false);
   }
-
+  
   return (
     <Modal
       visible={isVisible}
@@ -23,7 +23,7 @@ const ConfirmModal = ({ heading, buttons, isVisible, setIsVisible }: ConfirmModa
     >
       <Label align="center">{heading}</Label>
       <RowView>
-        {buttons.map((button) => (<Button {...button} isFullWidth />))}
+        {buttons.map((button, i) => (<Button key={i} {...button} isFullWidth />))}
       </RowView>
     </Modal>
   )
