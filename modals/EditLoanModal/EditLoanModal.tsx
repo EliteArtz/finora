@@ -12,6 +12,7 @@ import { useMMKVObject } from 'react-native-mmkv';
 import { Expense } from '../../types/expenses.type';
 import styled, { css } from 'styled-components/native';
 import { Loan } from "../../types/loans.type";
+import parseValue from "../../helpers/parseValue";
 
 type EditELoanModalProps = {
   loanId: Loan['id'] | undefined;
@@ -92,7 +93,7 @@ const EditLoanModal = ({ loanId, visible, setVisible }: EditELoanModalProps) => 
     editLoanValue && onEditChange({
       lend: [
         ...(editLoan?.lend || []),
-        parseFloat(editLoanValue.replace(',', '.'))
+        parseValue(editLoanValue)
       ]
     })
     setEditLoanValue(undefined);
@@ -102,7 +103,7 @@ const EditLoanModal = ({ loanId, visible, setVisible }: EditELoanModalProps) => 
     editReturnValue && onEditChange({
       returned: [
         ...(editLoan?.returned || []),
-        parseFloat(editReturnValue.replace(',', '.'))
+        parseValue(editReturnValue)
       ]
     })
     setEditReturnValue(undefined);

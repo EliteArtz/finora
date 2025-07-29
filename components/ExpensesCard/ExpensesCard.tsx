@@ -2,32 +2,20 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import Label from '../Label/Label';
 import BaseCard from '../BaseCard/BaseCard';
-import numberCurrency from '../../helpers/numberCurrency';
 import { Expense } from '../../types/expenses.type';
-import styled, { css, useTheme } from 'styled-components/native';
-import { FlatList, View } from 'react-native';
+import { useTheme } from 'styled-components/native';
+import { FlatList } from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import Separator from '../Separator/Separator';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 import EditExpenseModal from '../../modals/EditExpenseModal/EditExpenseModal';
-import Modal from "../Modal/Modal";
-import RowView from "../RowView/RowView";
-import Button from "../Button/Button";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ListItem from "./ListItem";
-import Pressable from "../Pressable/Pressable";
+import InfoExpenseModal from "../../modals/InfoExpenseModal/InfoExpenseModal";
 
 type ExpensesCardProps = {
   type: Expense['type'];
 }
-
-const Style_AmountView = styled.View`
-  ${({ theme }) => css`
-    background-color: ${theme.color.background};
-    padding: ${theme.size.s.px};
-    border-radius: ${theme.size.s.value * 8}px;
-  `}
-`
 
 const ExpensesCard = ({ type }: ExpensesCardProps) => {
   const theme = useTheme();
@@ -66,15 +54,18 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
       }
     }), [ expenses, theme ]);
 
+  /**
+   * Migration from without dates
+   * Check if there are any expenses without dates and fill them
+   */
   useEffect(() => {
-    if (expenses?.find(e => !e.date)) {
-      setExpenses(expenses?.map(e => ({
-        ...e, ...(!e.date && {
-          date: new Date().toISOString()
-        })
-      })))
-      console.log(expenses)
-    }
+    if (!expenses?.find(e => !e.date)) return;
+    setExpenses(expenses?.map(e => ({
+      ...e,
+      ...(!e.date && {
+        date: new Date().toISOString()
+      })
+    })))
   }, []);
 
 
@@ -95,72 +86,20 @@ const ExpensesCard = ({ type }: ExpensesCardProps) => {
         />}
       />
     </GestureHandlerRootView>
-    <EditExpenseModal
-      expenseId={expenseId}
-      visible={isEditExpenseModalVisible}
-      setVisible={setEditExpenseModalVisible}
-    />
+    {expense && (<>
+      <EditExpenseModal
+        expense={expense}
+        visible={isEditExpenseModalVisible}
+        setVisible={setEditExpenseModalVisible}
+      />
+      <InfoExpenseModal
+        expense={expense}
+        isVisible={isInfoModalVisible}
+        setIsEditModalVisible={setEditExpenseModalVisible}
+        setIsVisible={setInfoModalVisible}
+      />
+    </>)}
 
-    <Modal
-      visible={isInfoModalVisible}
-      onRequestClose={() => setInfoModalVisible(false)}
-    >
-      <RowView justifyContent={expense?.description ? 'space-between' : 'flex-end'}>
-        {expense?.description && <Label>{expense.description}</Label>}
-        <Pressable onPress={() => setEditExpenseModalVisible(true)}>
-          <FontAwesomeIcon
-            icon="pen"
-            color="textSecondary"
-            size="s"
-          />
-        </Pressable>
-      </RowView>
-      {expense?.date && <RowView justifyContent="space-between">
-        <Label color="textSecondary" size="s">Datum</Label>
-        <Label
-          color="textSecondary"
-          size="s"
-          weight="bold"
-        >{new Intl.DateTimeFormat(undefined, {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-        }).format(new Date(expense.date))}</Label>
-      </RowView>}
-      <Style_AmountView>
-        <RowView justifyContent="space-between">
-          <Label color="textPrimary" size="s">Wert</Label>
-          <Label
-            color="textPrimary"
-            size="s"
-            weight="bold"
-          >{numberCurrency(expense?.amount || 0)}</Label>
-        </RowView>
-
-        {expense?.paid && <><Separator /><RowView justifyContent="space-between">
-          <View style={{ flex: 1 }}>
-            <Label color="success" size="s" align="left">Bezahlt</Label>
-            <Label
-              color="textPrimary"
-              size="s"
-              weight="bold"
-              align="left"
-            >{numberCurrency(Math.min(expense.paid.reduce((acc, x) => acc + x, 0), expense.amount) || 0)}</Label>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Label color="warning" size="s" align="right">Restbetrag</Label>
-            <Label
-              color="textPrimary"
-              size="s"
-              weight="bold"
-              align="right"
-            >{numberCurrency(expense ?
-              expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x, 0) || 0, expense.amount)) :
-              0)}</Label>
-          </View>
-        </RowView></>}
-      </Style_AmountView>
-      <Button onPress={() => setInfoModalVisible(false)}><Label>OK</Label></Button>
-    </Modal>
   </BaseCard>);
 };
 

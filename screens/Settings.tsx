@@ -1,6 +1,6 @@
 import Layout01 from '../layouts/Layout01';
 import Button from '../components/Button/Button';
-import {useMMKV, useMMKVString} from 'react-native-mmkv';
+import { useMMKV, useMMKVString } from 'react-native-mmkv';
 import styled, { css, useTheme } from 'styled-components/native';
 import Label from '../components/Label/Label';
 import { Picker as RNPicker, PickerItemProps } from '@react-native-picker/picker';
@@ -8,14 +8,14 @@ import Picker from '../components/Picker/Picker';
 import Separator from '../components/Separator/Separator';
 import RowView from '../components/RowView/RowView';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
-import Modal from '../components/Modal/Modal';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { Expense } from '../types/expenses.type';
 import { Platform } from 'react-native';
 import { Loan } from "../types/loans.type";
+import ConfirmModal from "../modals/ConfirmModal/ConfirmModal";
 
 const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
@@ -40,19 +40,29 @@ const Settings = () => {
     }
   }
 
+  const onConfirmDeletePress = () => {
+    MMKV.clearAll();
+    setConfirmModalVisible(false);
+  }
+
+  const onCancelDeletePress = () => {
+    setConfirmModalVisible(false)
+  }
+
   const importData = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: 'application/json',
     });
 
-    if(result.canceled) return;
+    if (result.canceled) return;
 
     const fileContent = await FileSystem.readAsStringAsync(result.assets[0].uri);
     const data = JSON.parse(fileContent);
 
-    Object.keys(data).forEach((key) => {
-      MMKV.set(key, typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key]);
-    })
+    Object.keys(data)
+      .forEach((key) => {
+        MMKV.set(key, typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key]);
+      })
   }
 
   const exportData = async () => {
@@ -62,11 +72,12 @@ const Settings = () => {
       expenses: JSON.parse(MMKV.getString('expenses') || '[]') as Expense[],
       loans: JSON.parse(MMKV.getString('loans') || '[]') as Loan[],
     });
-    const filename = `backup_${new Date().toISOString().split('T')[0]}.json`;
+    const filename = `backup_${new Date().toISOString()
+      .split('T')[0]}.json`;
     const path = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(path, json);
 
-    if(Platform.OS === 'android') {
+    if (Platform.OS === 'android') {
       const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
 
       if (!permissions.granted) {
@@ -79,12 +90,9 @@ const Settings = () => {
         filename,
         'application/json'
       );
-      await FileSystem.StorageAccessFramework.writeAsStringAsync(
-        uri,
-        json
-      );
+      await FileSystem.StorageAccessFramework.writeAsStringAsync(uri, json);
     } else {
-      if(!await Sharing.isAvailableAsync()) {
+      if (!await Sharing.isAvailableAsync()) {
         await FileSystem.deleteAsync(path)
         return;
       }
@@ -93,60 +101,54 @@ const Settings = () => {
     await FileSystem.deleteAsync(path)
   }
 
-  return (
-    <Layout01 isSettings>
-      <Style_Settings>
-        <Label size="xl" weight="bold">Einstellungen</Label>
-        <RowView>
-          <Label><FontAwesomeIcon color="textPrimary" icon="palette" /></Label>
-          <Picker
-            mode="dropdown"
-            style={{ flex: 1 }}
-            selectedValue={theme}
-            onValueChange={(value) => setTheme(value as string)}
-          >
-            <RNPicker.Item value="light" label="Hell" {...props} />
-            <RNPicker.Item value="dark" label="Dunkel" {...props} />
-          </Picker>
-        </RowView>
-        <Separator />
-        <Label weight='bold' size='l'>Daten</Label>
-        <RowView>
-          <Button onPress={importData} isFullWidth>
-            <FontAwesomeIcon icon='file-import' />
-            <Label>Import</Label>
-          </Button>
-          <Button onPress={exportData} isFullWidth>
-            <FontAwesomeIcon icon='file-export' />
-            <Label>Export</Label>
-          </Button>
-        </RowView>
-        <Button type="danger" onPress={() => setConfirmModalVisible(true)}>
-          <FontAwesomeIcon icon='warning' color='danger' />
-          <Label color="danger" align="center">Alle Daten löschen</Label>
-        </Button>
-        <Modal
-          visible={isConfirmModalVisible}
-          onRequestClose={() => setConfirmModalVisible(false)}
+  return (<Layout01 isSettings>
+    <Style_Settings>
+      <Label size="xl" weight="bold">Einstellungen</Label>
+      <RowView>
+        <Label><FontAwesomeIcon color="textPrimary" icon="palette" /></Label>
+        <Picker
+          mode="dropdown"
+          style={{ flex: 1 }}
+          selectedValue={theme}
+          onValueChange={(value) => setTheme(value as string)}
         >
-          <Label align="center">Wirklich alle Daten löschen?</Label>
-          <RowView>
-            <Button
-              type="danger" isFullWidth onPress={() => {
-              MMKV.clearAll();
-              setConfirmModalVisible(false);
-            }}
-            >
-              <Label align="center" color="danger">Löschen</Label>
-            </Button>
-            <Button isFullWidth onPress={() => setConfirmModalVisible(false)}>
-              <Label align="center">Abbrechen</Label>
-            </Button>
-          </RowView>
-        </Modal>
-      </Style_Settings>
-    </Layout01>
-  );
+          <RNPicker.Item value="light" label="Hell" {...props} />
+          <RNPicker.Item value="dark" label="Dunkel" {...props} />
+        </Picker>
+      </RowView>
+      <Separator />
+      <Label weight="bold" size="l">Daten</Label>
+      <RowView>
+        <Button onPress={importData} isFullWidth>
+          <FontAwesomeIcon icon="file-import" />
+          <Label>Import</Label>
+        </Button>
+        <Button onPress={exportData} isFullWidth>
+          <FontAwesomeIcon icon="file-export" />
+          <Label>Export</Label>
+        </Button>
+      </RowView>
+      <Button type="danger" onPress={() => setConfirmModalVisible(true)}>
+        <FontAwesomeIcon icon="warning" color="danger" />
+        <Label color="danger" align="center">Alle Daten löschen</Label>
+      </Button>
+      <ConfirmModal
+        heading="Wirklich alle Daten löschen?"
+        buttons={[
+          {
+            type: 'danger',
+            onPress: onConfirmDeletePress,
+            children: <Label align="center" color="danger">Löschen</Label>
+          }, {
+            onPress: onCancelDeletePress,
+            children: <Label align="center">Abbrechen</Label>
+          }
+        ]}
+        isVisible={isConfirmModalVisible}
+        setIsVisible={setConfirmModalVisible}
+      />
+    </Style_Settings>
+  </Layout01>);
 };
 
 export default Settings;

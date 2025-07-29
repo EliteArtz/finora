@@ -13,6 +13,7 @@ import uuid from "react-native-uuid";
 import { useMMKVObject } from "react-native-mmkv";
 import styled, { css } from "styled-components/native";
 import Separator from "../../components/Separator/Separator";
+import parseValue from "../../helpers/parseValue";
 
 type AddLoanModalProps = {
   isVisible: boolean;
@@ -45,7 +46,7 @@ const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
 
   const onAddDraftLoanPress = () => {
     if (!draftLoan) return;
-    const convertedLoan = parseFloat(draftLoan.replace(',', '.'));
+    const convertedLoan = parseValue(draftLoan);
     setDraftLoans([ ...(draftLoans || []), convertedLoan ]);
     setDraftLoan(undefined);
   }

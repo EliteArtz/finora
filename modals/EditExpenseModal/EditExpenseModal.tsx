@@ -12,9 +12,10 @@ import { useMMKVObject } from 'react-native-mmkv';
 import { Expense } from '../../types/expenses.type';
 import styled, { css } from 'styled-components/native';
 import { View } from 'react-native';
+import parseValue from "../../helpers/parseValue";
 
 type EditExpenseModalProps = {
-  expenseId: Expense['id'] | undefined;
+  expense: Expense;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<EditExpenseModalProps['visible']>>;
 }
@@ -37,7 +38,7 @@ const Style_FlatList = styled.FlatList.attrs(({ theme }) => ({
 `
 
 const EditExpenseModal = ({
-  expenseId,
+  expense,
   visible,
   setVisible
 }: EditExpenseModalProps) => {
@@ -49,9 +50,8 @@ const EditExpenseModal = ({
     setVisible(false);
   };
 
-  const onDeletePress = (id?: Expense['id']) => {
-    if (!id) return;
-    const newExpenses = expenses?.filter(expense => expense.id !== id);
+  const onDeletePress = () => {
+    const newExpenses = expenses?.filter(e => e.id !== expense.id);
     setExpenses(newExpenses);
     setVisible(false);
   };
@@ -78,7 +78,7 @@ const EditExpenseModal = ({
       if (expense.id !== editExpense.id) return expense;
       return {
         ...expense, ...editExpense,
-        amount: parseFloat(editExpense.amount.replace(',', '.'))
+        amount: parseValue(editExpense.amount)
       };
     });
     setExpenses(newExpenses);
@@ -88,18 +88,13 @@ const EditExpenseModal = ({
   const onSubmitPaidEdit = () => {
     editPaidValue && onEditChange({
       paid: [
-        ...(editExpense?.paid || []), parseFloat(editPaidValue?.replace(',', '.'))
+        ...(editExpense?.paid || []), parseValue(editPaidValue)
       ]
     })
     setEditPaidValue(undefined);
   }
 
   useEffect(() => {
-    if (!expenseId) return;
-
-    const expense = expenses?.find(expense => expense.id === expenseId);
-    if (!expense) return;
-
     setEditExpense({
       id: expense.id,
       type: expense.type,
@@ -107,7 +102,7 @@ const EditExpenseModal = ({
       amount: expense.amount.toString(),
       paid: expense.paid
     });
-  }, [ expenseId ]);
+  }, [ expense ]);
 
   return (<Modal
     visible={visible}
@@ -123,7 +118,7 @@ const EditExpenseModal = ({
           isFullWidth
         />
         <Pressable
-          onPress={() => onDeletePress(expenseId)}
+          onPress={onDeletePress}
           hitSlop={16}
         >
           <FontAwesomeIcon color="danger" size="s" icon="trash" />

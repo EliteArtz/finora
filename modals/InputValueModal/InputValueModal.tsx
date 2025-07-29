@@ -5,6 +5,7 @@ import Button from "../../components/Button/Button";
 import React, {useState} from "react";
 import styled from "styled-components/native";
 import Input from "../../components/Input/Input";
+import parseValue from "../../helpers/parseValue";
 
 type InputValueModalProps = {
   label: string;
@@ -34,9 +35,7 @@ const InputValueModal = ({
 
   const onSubmitEditing = () => {
     setIsVisible(false);
-    setValue(editValue ? parseFloat(
-      editValue?.replace(',', '.')
-    ) : undefined);
+    setValue(editValue ? parseValue(editValue) : undefined);
   };
 
   return (
