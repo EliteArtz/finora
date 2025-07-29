@@ -1,12 +1,12 @@
 import styled, { css } from "styled-components/native";
 import { useMMKVObject } from "react-native-mmkv";
 import { Expense } from "../../types/expenses.type";
-import React from "react";
+import React, { useRef } from "react";
 import Label from "../Label/Label";
 import FontAwesomeIcon from "../FontAwesomeIcon/FontAwesomeIcon";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Pressable from "../Pressable/Pressable";
-import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import Swipeable, { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
 import { View } from "react-native";
 import numberCurrency from "../../helpers/numberCurrency";
 
@@ -41,6 +41,16 @@ const Style_DeleteAction = styled(Animated.View)`
     padding-inline: ${theme.size.xxl.px};
   `}
 `
+
+const Style_EditAction = styled(Animated.View)`
+  ${({ theme }) => css`
+    background-color: ${theme.color.textSecondary};
+    justify-content: center;
+    align-items: center;
+    padding-inline: ${theme.size.xxl.px};
+  `}
+`
+
 const Item = ({
   item: {
     id,
@@ -53,6 +63,7 @@ const Item = ({
   setEditExpenseModalVisible,
   setInfoModalVisible,
 }: ItemProps) => {
+  const ref = useRef<SwipeableMethods>(null);
   const height = useSharedValue<number | undefined>(undefined);
   const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
 
@@ -62,6 +73,11 @@ const Item = ({
     </Style_DeleteAction>)
   }
 
+  const renderLeftActions = () => {
+    return (<Style_EditAction>
+      <FontAwesomeIcon icon="pen" color="surface" />
+    </Style_EditAction>)
+  }
 
   const onDeletePress = () => {
     const newExpenses = expenses?.filter(expense => expense.id !== id);
@@ -89,31 +105,34 @@ const Item = ({
   }));
 
   return (<Swipeable
+    ref={ref}
     renderRightActions={type === 'transaction' ? renderRightActions : undefined}
+    renderLeftActions={renderLeftActions}
     overshootRight={false}
+    overshootLeft={false}
     rightThreshold={130}
+    leftThreshold={130}
     containerStyle={[ { overflow: "hidden" }, animatedStyle ]}
     onSwipeableOpen={(direction) => {
       if (direction === 'left') {
         height.value = 0;
+      } else if (direction === 'right') {
+        onPressItem(id);
+        ref.current?.close()
       }
     }}
   >
     <Style_Item
       onLayout={(e) => {
         if (height.value === undefined) height.value = e.nativeEvent.layout.height
-      }} onPress={() => onPressItem(id)}
+      }}
+      onPress={() => onInfoPress(id)}
     >
       <View style={{ flex: 1 }}>
         {description}
         <Label weight="bold">{numberCurrency(amount)}</Label>
       </View>
-      {type === 'fixed' && <Pressable
-        hitSlop={10}
-        onPress={() => onInfoPress(id)}
-      >
-        {progressPaid}
-      </Pressable>}
+      {type === 'fixed' && progressPaid}
     </Style_Item></Swipeable>)
 };
 

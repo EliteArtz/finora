@@ -121,12 +121,14 @@ const App = () => {
     SplashScreen.hide();
   }, [ loaded ]);
 
-  return loaded && (<SafeAreaProvider>
-    <ThemeProvider theme={themeObject}>
-      <StatusBar style={invScheme} />
-      <Navigation theme={navigatorTheme} />
-    </ThemeProvider>
-  </SafeAreaProvider>);
+  return loaded && (<React.StrictMode>
+    <SafeAreaProvider>
+      <ThemeProvider theme={themeObject}>
+        <StatusBar style={invScheme} />
+        <Navigation theme={navigatorTheme} />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  </React.StrictMode>);
 };
 
 export default App;

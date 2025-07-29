@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { Expense } from '../../types/expenses.type';
 import styled, { css } from 'styled-components/native';
+import { View } from 'react-native';
 
 type EditExpenseModalProps = {
   expenseId: Expense['id'] | undefined;
@@ -19,14 +20,10 @@ type EditExpenseModalProps = {
 }
 
 type EditExpenseProps = {
-  id: Expense['id'];
-  type: Expense['type'];
-  description: Expense['description'];
-  amount: string;
-  paid?: Expense['paid'];
+  id: Expense['id']; type: Expense['type']; description: Expense['description']; amount: string; paid?: Expense['paid'];
 }
 
-const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
+const Style_FlatList = styled.FlatList.attrs(({ theme }) => ({
   contentContainerStyle: {
     gap: theme.size.s.value * 16,
     padding: theme.size.s.value * 16,
@@ -39,7 +36,11 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
   `}
 `
 
-const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalProps) => {
+const EditExpenseModal = ({
+  expenseId,
+  visible,
+  setVisible
+}: EditExpenseModalProps) => {
   const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
   const [ editPaidValue, setEditPaidValue ] = useState<string>();
   const [ editExpense, setEditExpense ] = useState<EditExpenseProps>();
@@ -67,8 +68,7 @@ const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalPr
   const onEditChange = (expense: Partial<EditExpenseProps>) => {
     if (!editExpense) return;
     setEditExpense({
-      ...editExpense,
-      ...expense
+      ...editExpense, ...expense
     });
   }
 
@@ -77,8 +77,7 @@ const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalPr
     const newExpenses = expenses?.map(expense => {
       if (expense.id !== editExpense.id) return expense;
       return {
-        ...expense,
-        ...editExpense,
+        ...expense, ...editExpense,
         amount: parseFloat(editExpense.amount.replace(',', '.'))
       };
     });
@@ -88,10 +87,9 @@ const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalPr
 
   const onSubmitPaidEdit = () => {
     editPaidValue && onEditChange({
-      paid: [ ...(editExpense?.paid || []), parseFloat(editPaidValue?.replace(
-        ',',
-        '.'
-      )) ]
+      paid: [
+        ...(editExpense?.paid || []), parseFloat(editPaidValue?.replace(',', '.'))
+      ]
     })
     setEditPaidValue(undefined);
   }
@@ -111,14 +109,15 @@ const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalPr
     });
   }, [ expenseId ]);
 
-  return (
-    <Modal
-      visible={visible}
-      onRequestClose={onRequestClose}
-    >
-      <RowView style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+  return (<Modal
+    visible={visible}
+    onRequestClose={onRequestClose}
+  >
+    <View>
+      <Label size="s">Beschreibung</Label>
+      <RowView justifyContent="space-between">
         <Input
-          placeholder="Beschreibung (optional)"
+          placeholder="Beschreibung"
           value={editExpense?.description}
           onChangeText={(value) => onEditChange({ description: value })}
           isFullWidth
@@ -130,9 +129,12 @@ const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalPr
           <FontAwesomeIcon color="danger" size="s" icon="trash" />
         </Pressable>
       </RowView>
+    </View>
+    <View>
+      <Label size="s">Wert <Label size="s" color="danger">*</Label></Label>
       <RowView>
         <Input
-          placeholder="Wert"
+          placeholder="12,34"
           value={editExpense?.amount}
           onChangeText={(value) => onEditChange({ amount: value })}
           keyboardType="decimal-pad"
@@ -140,38 +142,38 @@ const EditExpenseModal = ({ expenseId, visible, setVisible }: EditExpenseModalPr
         />
         <Label>€</Label>
       </RowView>
-      {editExpense?.type === 'fixed' && (
-        <>
-          <Separator space="none" />
-          <Label size="s" color="textSecondary">Bezahlt</Label>
-          <Style_ScrollView>
-            {editExpense.paid?.map((paid, index) => (
-              <RowView key={index} style={{ justifyContent: 'space-between' }}>
-                <Label color="textPrimary" weight="bold">{numberCurrency(paid)}</Label>
-                <Pressable onPress={() => onDeletePaidPress(index)}>
-                  <FontAwesomeIcon color="danger" size="l" icon="xmark" />
-                </Pressable>
-              </RowView>
-            ))}
-          </Style_ScrollView>
-          <RowView>
-            <Input
-              value={editPaidValue}
-              placeholder="Wert in EUR"
-              keyboardType="decimal-pad"
-              onChangeText={setEditPaidValue}
-              onSubmitEditing={onSubmitPaidEdit}
-              isFullWidth
-            />
-            <Pressable onPress={onSubmitPaidEdit}>
-              <FontAwesomeIcon color="primary" size="l" icon="add" />
-            </Pressable>
-          </RowView>
-        </>
-      )}
-      <Button onPress={onSubmitEdit}><Label align="center">OK</Label></Button>
-    </Modal>
-  )
+    </View>
+    {editExpense?.type === 'fixed' && (<>
+      <Separator space="none" />
+      <Label size="s" color="textSecondary">Bezahlt</Label>
+      <Style_FlatList
+        data={editExpense.paid}
+        renderItem={({
+          item: paid,
+          index
+        }) => (<RowView key={index} style={{ justifyContent: 'space-between' }}>
+          <Label color="textPrimary" weight="bold">{typeof paid === 'number' && numberCurrency(paid)}</Label>
+          <Pressable onPress={() => onDeletePaidPress(index)}>
+            <FontAwesomeIcon color="danger" size="l" icon="xmark" />
+          </Pressable>
+        </RowView>)}
+      />
+      <RowView>
+        <Input
+          value={editPaidValue}
+          placeholder="12,34"
+          keyboardType="decimal-pad"
+          onChangeText={setEditPaidValue}
+          onSubmitEditing={onSubmitPaidEdit}
+          isFullWidth
+        />
+        <Pressable onPress={onSubmitPaidEdit}>
+          <FontAwesomeIcon color="primary" size="l" icon="add" />
+        </Pressable>
+      </RowView>
+    </>)}
+    <Button onPress={onSubmitEdit}><Label align="center">OK</Label></Button>
+  </Modal>)
 }
 
 export default EditExpenseModal;

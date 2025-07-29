@@ -29,7 +29,8 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   const insets = useSafeAreaInsets();
   return {
     contentContainerStyle: {
-      gap: theme.size.l.value * 16, paddingBottom: insets.bottom,
+      gap: theme.size.l.value * 16,
+      paddingBottom: insets.bottom,
     }
   };
 })`
@@ -44,14 +45,14 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
 const Home = () => {
   return (<Layout01>
       <Style_ScrollView>
-          <TotalCard />
-          <SavingsCard />
-          <Style_CardContainer>
-            <ExpensesCard type="fixed" />
-          </Style_CardContainer>
-          <Style_CardContainer>
-            <ExpensesCard type="transaction" />
-          </Style_CardContainer>
+        <TotalCard />
+        <SavingsCard />
+        <Style_CardContainer>
+          <ExpensesCard type="fixed" />
+        </Style_CardContainer>
+        <Style_CardContainer>
+          <ExpensesCard type="transaction" />
+        </Style_CardContainer>
       </Style_ScrollView>
       <Style_BottomAction>
         <ExpenseButton />

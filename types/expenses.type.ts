@@ -4,4 +4,5 @@ export type Expense = {
   amount: number,
   description?: string,
   paid?: number[],
+  date?: string,
 }

@@ -44,6 +44,7 @@ const ExpenseButton = () => {
       type,
       description,
       amount: parseFloat(expense.replace(',', '.')),
+      date: new Date().toISOString()
     };
     setExpenses(expenses?.length ? [ ...expenses, expenseObject ] : [ expenseObject ]);
   };
@@ -54,37 +55,42 @@ const ExpenseButton = () => {
   }, [ expenses ]);
 
   return (<>
-      <Button type="primary" padding="l" onPress={onPress}>
-        <FontAwesomeIcon
-          color="surface"
-          size="l"
-          icon="plus"
-        />
-      </Button>
-      <View>
-        <ScrollView>
-          <Modal
-            visible={isModalVisible}
-            onRequestClose={onRequestClose}
+    <Button type="primary" padding="l" onPress={onPress}>
+      <FontAwesomeIcon
+        color="surface"
+        size="l"
+        icon="plus"
+      />
+    </Button>
+    <View>
+      <ScrollView>
+        <Modal
+          visible={isModalVisible}
+          onRequestClose={onRequestClose}
+        >
+          <Label size="s" color="textSecondary">Eintrag verfassen</Label>
+          <Picker
+            mode="dropdown"
+            selectedValue={type}
+            textColor="primary"
+            onValueChange={(item) => setType(item as Expense['type'])}
           >
-            <Label size="s" color="textSecondary">Eintrag verfassen</Label>
-            <Picker
-              mode="dropdown"
-              selectedValue={type}
-              textColor="primary"
-              onValueChange={(item) => setType(item as Expense['type'])}
-            >
-              <RNPicker.Item label="Buchung" value="transaction" {...props} />
-              <RNPicker.Item label="Fixe Kosten" value="fixed" {...props} />
-            </Picker>
+            <RNPicker.Item label="Buchung" value="transaction" {...props} />
+            <RNPicker.Item label="Fixe Kosten" value="fixed" {...props} />
+          </Picker>
+          <View>
+            <Label size="s">Beschreibung</Label>
             <Input
-              placeholder="Beschreibung (optional)"
+              placeholder="Beschreibung"
               value={description}
               onChangeText={setDescription}
             />
+          </View>
+          <View>
+            <Label size="s">Wert <Label size="s" color="danger">*</Label></Label>
             <RowView>
               <Input
-                placeholder="Wert"
+                placeholder="12,34"
                 keyboardType="decimal-pad"
                 value={expense}
                 onChangeText={setExpense}
@@ -93,13 +99,14 @@ const ExpenseButton = () => {
               />
               <Label>€</Label>
             </RowView>
-            <Button onPress={onSubmit} disabled={!expense}>
-              <Label align="center">Hinzufügen</Label>
-            </Button>
-          </Modal>
-        </ScrollView>
-      </View>
-    </>);
+          </View>
+          <Button onPress={onSubmit} disabled={!expense}>
+            <Label align="center">Hinzufügen</Label>
+          </Button>
+        </Modal>
+      </ScrollView>
+    </View>
+  </>);
 };
 
 export default ExpenseButton;

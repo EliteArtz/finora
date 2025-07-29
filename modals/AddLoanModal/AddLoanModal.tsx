@@ -95,7 +95,7 @@ const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
           </Style_ScrollView>
           <RowView>
             <Input
-              placeholder="Wert in EUR"
+              placeholder="Wert"
               keyboardType="decimal-pad"
               value={draftLoan}
               onChangeText={setDraftLoan}
