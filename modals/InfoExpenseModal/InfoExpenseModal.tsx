@@ -26,7 +26,12 @@ const Style_AmountView = styled.View`
   `}
 `
 
-const InfoExpenseModal = ({ expense, isVisible, setIsVisible, setIsEditModalVisible }: InfoExpenseModalProps) => {
+const InfoExpenseModal = ({
+  expense,
+  isVisible,
+  setIsVisible,
+  setIsEditModalVisible
+}: InfoExpenseModalProps) => {
   const onRequestClose = () => {
     setIsVisible(false);
   }
@@ -40,65 +45,62 @@ const InfoExpenseModal = ({ expense, isVisible, setIsVisible, setIsEditModalVisi
   }
 
   return (<Modal
-      visible={isVisible}
-      onRequestClose={onRequestClose}
-    >
-      <RowView justifyContent={expense?.description ? 'space-between' : 'flex-end'}>
+    visible={isVisible}
+    onRequestClose={onRequestClose}
+  >
+    <RowView>
+      <RowView justifyContent="space-between" style={{ flex: 1 }}>
         {expense?.description && <Label>{expense.description}</Label>}
-        <Pressable onPress={onEditPress}>
-          <FontAwesomeIcon
-            icon="pen"
-            color="textSecondary"
-            size="s"
-          />
-        </Pressable>
-      </RowView>
-      {expense?.date && <RowView justifyContent="space-between">
-        <Label color="textSecondary" size="s">Datum</Label>
-        <Label
+        {expense?.date && <Label
           color="textSecondary"
           size="s"
-          weight="bold"
         >{new Intl.DateTimeFormat(undefined, {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-        }).format(new Date(expense.date))}</Label>
-      </RowView>}
-      <Style_AmountView>
-        <RowView justifyContent="space-between">
-          <Label color="textPrimary" size="s">Wert</Label>
+          dateStyle: 'short',
+        }).format(new Date(expense.date))}</Label>}
+      </RowView>
+      <Pressable onPress={onEditPress}>
+        <FontAwesomeIcon
+          icon="pen"
+          color="textSecondary"
+          size="s"
+        />
+      </Pressable>
+    </RowView>
+    <Style_AmountView>
+      <RowView justifyContent="space-between">
+        <Label color="textPrimary" size="s">Wert</Label>
+        <Label
+          color="textPrimary"
+          size="s"
+          weight="bold"
+        >{numberCurrency(expense?.amount || 0)}</Label>
+      </RowView>
+
+      {expense?.paid && <><Separator /><RowView justifyContent="space-between">
+        <View style={{ flex: 1 }}>
+          <Label color="success" size="s" align="left">Bezahlt</Label>
           <Label
             color="textPrimary"
             size="s"
             weight="bold"
-          >{numberCurrency(expense?.amount || 0)}</Label>
-        </RowView>
-
-        {expense?.paid && <><Separator /><RowView justifyContent="space-between">
-          <View style={{ flex: 1 }}>
-            <Label color="success" size="s" align="left">Bezahlt</Label>
-            <Label
-              color="textPrimary"
-              size="s"
-              weight="bold"
-              align="left"
-            >{numberCurrency(Math.min(expense.paid.reduce((acc, x) => acc + x, 0), expense.amount) || 0)}</Label>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Label color="warning" size="s" align="right">Restbetrag</Label>
-            <Label
-              color="textPrimary"
-              size="s"
-              weight="bold"
-              align="right"
-            >{numberCurrency(expense ?
-              expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x, 0) || 0, expense.amount)) :
-              0)}</Label>
-          </View>
-        </RowView></>}
-      </Style_AmountView>
-      <Button onPress={onFinishPress}><Label>OK</Label></Button>
-    </Modal>)
+            align="left"
+          >{numberCurrency(Math.min(expense.paid.reduce((acc, x) => acc + x, 0), expense.amount) || 0)}</Label>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Label color="danger" size="s" align="right">Restbetrag</Label>
+          <Label
+            color="textPrimary"
+            size="s"
+            weight="bold"
+            align="right"
+          >{numberCurrency(expense ?
+            expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x, 0) || 0, expense.amount)) :
+            0)}</Label>
+        </View>
+      </RowView></>}
+    </Style_AmountView>
+    <Button onPress={onFinishPress}><Label>OK</Label></Button>
+  </Modal>)
 };
 
 export default InfoExpenseModal;
