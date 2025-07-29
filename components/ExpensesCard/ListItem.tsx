@@ -124,7 +124,7 @@ const Item = ({
   >
     <Style_Item
       onLayout={(e) => {
-        if (height.value === undefined) height.value = e.nativeEvent.layout.height
+        if (height.value !== 0) height.value = e.nativeEvent.layout.height
       }}
       onPress={() => onInfoPress(id)}
     >
