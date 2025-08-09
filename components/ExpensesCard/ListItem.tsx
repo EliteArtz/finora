@@ -4,10 +4,12 @@ import { Expense } from "../../types/expenses.type";
 import React, { useRef } from "react";
 import Label from "../Label/Label";
 import FontAwesomeIcon from "../FontAwesomeIcon/FontAwesomeIcon";
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, {
+  runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming
+} from "react-native-reanimated";
 import Pressable from "../Pressable/Pressable";
-import Swipeable, { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
-import { View } from "react-native";
+import Swipeable, { SwipeableMethods, SwipeableProps } from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Vibration, View } from "react-native";
 import numberCurrency from "../../helpers/numberCurrency";
 
 
@@ -34,19 +36,18 @@ const Style_Item = styled(AnimatedPressable)`
 `;
 
 const Style_DeleteAction = styled(Animated.View)`
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   ${({ theme }) => css`
     background-color: ${theme.color.danger};
-    justify-content: center;
-    align-items: center;
     padding-inline: ${theme.size.xxl.px};
   `}
 `
 
-const Style_EditAction = styled(Animated.View)`
+const Style_EditAction = styled(Style_DeleteAction)`
   ${({ theme }) => css`
     background-color: ${theme.color.textSecondary};
-    justify-content: center;
-    align-items: center;
     padding-inline: ${theme.size.xxl.px};
   `}
 `
@@ -63,17 +64,31 @@ const Item = ({
   setEditExpenseModalVisible,
   setInfoModalVisible,
 }: ItemProps) => {
+  const vibration = 50;
+  const threshold = 200;
   const ref = useRef<SwipeableMethods>(null);
   const height = useSharedValue<number | undefined>(undefined);
   const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
 
-  const renderRightActions = () => {
+  const renderRightActions: SwipeableProps['renderRightActions'] = (progress, translation) => {
+    useAnimatedReaction(() => translation.value, (prepared, previous) => {
+      if(prepared > 0) return;
+      if (previous && Math.abs(previous) < threshold && Math.abs(prepared) >= threshold) {
+        runOnJS(Vibration.vibrate)(vibration)
+      }
+    }, [])
     return (<Style_DeleteAction>
       <FontAwesomeIcon icon="trash" color="surface" />
     </Style_DeleteAction>)
   }
 
-  const renderLeftActions = () => {
+  const renderLeftActions: SwipeableProps['renderLeftActions'] = (progress, translation) => {
+    useAnimatedReaction(() => translation.value, (prepared, previous) => {
+      if(prepared < 0) return;
+      if (previous && Math.abs(previous) < threshold && Math.abs(prepared) >= threshold) {
+        runOnJS(Vibration.vibrate)(vibration)
+      }
+    }, [])
     return (<Style_EditAction>
       <FontAwesomeIcon icon="pen" color="surface" />
     </Style_EditAction>)
@@ -110,10 +125,11 @@ const Item = ({
     renderLeftActions={renderLeftActions}
     overshootRight={false}
     overshootLeft={false}
-    rightThreshold={130}
-    leftThreshold={130}
+    rightThreshold={threshold}
+    leftThreshold={threshold}
+    activateAfterLongPress={10000}
     containerStyle={[ { overflow: "hidden" }, animatedStyle ]}
-    onSwipeableOpen={(direction) => {
+    onSwipeableWillOpen={(direction) => {
       if (direction === 'left') {
         height.value = 0;
       } else if (direction === 'right') {
