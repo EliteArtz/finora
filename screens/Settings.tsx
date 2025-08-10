@@ -28,7 +28,12 @@ const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
 `;
 
 const Settings = () => {
-  const {MMKVCurrent, MMKVEvents, state, expenseEvents} = useExpenseEventHandler();
+  const {
+    MMKVCurrent,
+    MMKVEvents,
+    state,
+    expenseEvents
+  } = useExpenseEventHandler();
   const MMKV = useMMKV();
   const themeObj = useTheme();
   const [ loans ] = useMMKVObject<Loan[]>('loans');
@@ -73,18 +78,16 @@ const Settings = () => {
 
     const fileContent = await FileSystem.readAsStringAsync(result.assets[0].uri);
     const data: {
-      state: typeof state,
-      expenseEvents: typeof expenseEvents,
-      loans: typeof loans,
+      state: typeof state, expenseEvents: typeof expenseEvents, loans: typeof loans,
     } = JSON.parse(fileContent);
 
-    if(data.state) {
+    if (data.state) {
       MMKVCurrent.set('state', JSON.stringify(data.state));
     }
-    if(data.expenseEvents) {
+    if (data.expenseEvents) {
       MMKVEvents.set('expenseEvents', JSON.stringify(data.expenseEvents));
     }
-    if(data.loans) {
+    if (data.loans) {
       MMKV.set('loans', JSON.stringify(data.loans));
     }
   }
@@ -140,6 +143,28 @@ const Settings = () => {
         </Picker>
       </RowView>
       <Separator />
+      <Label weight="bold" size="l">Verlauf</Label>
+      <Button type="danger" onPress={() => setConfirmHistoryModalVisible(true)}>
+        <FontAwesomeIcon icon="history" color="danger" />
+        <Label color="danger" align="center">Verlauf löschen</Label>
+      </Button>
+      <ConfirmModal
+        heading="Wirklich den Verlauf löschen?"
+        subtext="Durch den Verlauf werden zeitliche Analysen angestellt."
+        buttons={[
+          {
+            type: 'danger',
+            onPress: onConfirmHistoryDeletePress,
+            children: <Label align="center" color="danger">Löschen</Label>
+          }, {
+            onPress: onCancelHistoryDeletePress,
+            children: <Label align="center">Abbrechen</Label>
+          }
+        ]}
+        isVisible={isConfirmHistoryModalVisible}
+        setIsVisible={setConfirmHistoryModalVisible}
+      />
+      <Separator />
       <Label weight="bold" size="l">Daten</Label>
       <RowView>
         <Button onPress={importData} isFullWidth>
@@ -169,28 +194,6 @@ const Settings = () => {
         ]}
         isVisible={isConfirmModalVisible}
         setIsVisible={setConfirmModalVisible}
-      />
-      <Separator />
-      <Label weight="bold" size="l">Verlauf</Label>
-      <Button type="danger" onPress={() => setConfirmHistoryModalVisible(true)}>
-        <FontAwesomeIcon icon="history" color="danger" />
-        <Label color="danger" align="center">Verlauf löschen</Label>
-      </Button>
-      <ConfirmModal
-        heading="Wirklich den Verlauf löschen?"
-        subtext="Durch den Verlauf werden zeitliche Analysen angestellt."
-        buttons={[
-          {
-            type: 'danger',
-            onPress: onConfirmHistoryDeletePress,
-            children: <Label align="center" color="danger">Löschen</Label>
-          }, {
-            onPress: onCancelHistoryDeletePress,
-            children: <Label align="center">Abbrechen</Label>
-          }
-        ]}
-        isVisible={isConfirmHistoryModalVisible}
-        setIsVisible={setConfirmHistoryModalVisible}
       />
     </Style_Settings>
   </Layout01>);
