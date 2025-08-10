@@ -12,7 +12,7 @@ type InputValueModalProps = {
   isVisible: boolean;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
   value: number | undefined;
-  setValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setValue: (value: InputValueModalProps['value']) => void;
 }
 
 const Style_FullInput = styled(Input)`
@@ -43,6 +43,7 @@ const InputValueModal = ({
       visible={isVisible}
       onRequestClose={onRequestClose}
     >
+      <Label size='s'>{label}</Label>
       <RowView>
         <Style_FullInput
 

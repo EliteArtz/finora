@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import BaseCard from '../BaseCard/BaseCard';
 import { View } from 'react-native';
 import Label from '../Label/Label';
 import styled from 'styled-components/native';
-import { useMMKVNumber, useMMKVObject } from 'react-native-mmkv';
 import numberCurrency from '../../helpers/numberCurrency';
-import { Expense } from '../../types/expenses.type';
 import Separator from '../Separator/Separator';
 import RowView from '../RowView/RowView';
 import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 import Pressable from '../Pressable/Pressable';
 import InputValueModal from '../../modals/InputValueModal/InputValueModal';
+import uuid from "react-native-uuid";
+import { useExpenseEventHandler } from "../../hooks/useExpenseEventHandler";
 
 const Style_Item = styled(Pressable)`
   flex-direction: row;
@@ -19,27 +19,27 @@ const Style_Item = styled(Pressable)`
 `;
 
 const TotalCard = () => {
-  const [ currentValue, setCurrentValue ] = useMMKVNumber('currentValue');
-  const [ expenses ] = useMMKVObject<Expense[]>('expenses');
-  const [ remainingValue, setRemainingValue ] = useMMKVNumber('remainingValue');
+  const {
+    state,
+    addExpenseEvent,
+    calculateRemainingBalance
+  } = useExpenseEventHandler();
+  const {
+    remainingBalance,
+    fixedValue,
+    variableValue
+  } = calculateRemainingBalance({});
   const [ isModalVisible, setModalVisible ] = useState(false);
-  const [ savings ] = useMMKVNumber('savings');
-  const transactionExpenses = expenses?.filter(expense => expense.type === 'transaction')
-    ?.reduce((acc, expense) => acc + expense.amount, 0) || undefined;
-  const fixedExpenses = expenses?.filter(expense => expense.type === 'fixed')
-    .reduce((acc, expense) => acc + expense.amount - Math.min(expense.paid?.reduce(
-      (acc2, paid) => (acc2 + paid),
-      0
-    ) || 0, expense.amount), 0) || undefined;
 
-  useEffect(() => {
-    if (!currentValue) {
-      setRemainingValue(undefined);
-      return;
-    }
-    const sum = (transactionExpenses || 0) + (fixedExpenses || 0) + (savings || 0);
-    setRemainingValue(currentValue - sum);
-  }, [ currentValue, expenses, savings ]);
+  const setValue = (value: number | undefined) => addExpenseEvent({
+    action: 'updated',
+    currentBalance: value ? {
+      id: uuid.v4(),
+      amount: value,
+      date: new Date().toISOString()
+    } : null,
+    previousExpense: state?.currentBalance
+  })
 
   return (<BaseCard>
     <Style_Item onPress={() => setModalVisible(true)}>
@@ -48,7 +48,7 @@ const TotalCard = () => {
           Aktueller Saldo
         </Label>
         <Label color="textSecondary" weight="bold">
-          {numberCurrency(currentValue)}
+          {numberCurrency(state?.currentBalance?.amount)}
         </Label>
       </View>
       <FontAwesomeIcon
@@ -59,37 +59,37 @@ const TotalCard = () => {
         label="Aktueller Saldo"
         isVisible={isModalVisible}
         setIsVisible={setModalVisible}
-        value={currentValue}
-        setValue={setCurrentValue}
+        value={state?.currentBalance?.amount}
+        setValue={setValue}
       />
     </Style_Item>
     <Separator />
     <Label color="textSecondary" size="s">Restsaldo</Label>
     <Label
-      color={!remainingValue ? 'textPrimary' : remainingValue < 0 ? 'danger' : 'primary'}
+      color={!remainingBalance ? 'textPrimary' : remainingBalance < 0 ? 'danger' : 'primary'}
       weight="bold"
       size="xxl"
     >
-      {numberCurrency(remainingValue)}
+      {numberCurrency(remainingBalance)}
     </Label>
-    {(fixedExpenses || transactionExpenses || savings) && <Separator />}
-    {fixedExpenses && <RowView style={{ justifyContent: 'space-between' }}>
+    {(fixedValue || variableValue || state?.savings?.amount) && <Separator />}
+    {fixedValue && <RowView style={{ justifyContent: 'space-between' }}>
       <Label color="textSecondary" size="s">Fixe Kosten</Label>
       <Label color="textSecondary" size="s" weight="bold">
-        {numberCurrency(fixedExpenses)}
+        {numberCurrency(fixedValue)}
       </Label>
     </RowView>}
 
-    {transactionExpenses && <RowView style={{ justifyContent: 'space-between' }}>
+    {variableValue && <RowView style={{ justifyContent: 'space-between' }}>
       <Label color="textSecondary" size="s">Buchungen</Label>
       <Label color="textSecondary" size="s" weight="bold">
-        {numberCurrency(transactionExpenses)}
+        {numberCurrency(variableValue)}
       </Label>
     </RowView>}
-    {savings && <RowView style={{ justifyContent: 'space-between' }}>
+    {state?.savings?.amount && <RowView style={{ justifyContent: 'space-between' }}>
       <Label color="textSecondary" size="s">Ersparnisse</Label>
       <Label color="textSecondary" size="s" weight="bold">
-        {numberCurrency(savings)}
+        {numberCurrency(state.savings.amount)}
       </Label>
     </RowView>}
   </BaseCard>);

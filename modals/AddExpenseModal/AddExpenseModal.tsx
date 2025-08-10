@@ -11,7 +11,7 @@ import { Picker as RNPicker, PickerItemProps } from "@react-native-picker/picker
 import { useTheme } from "styled-components/native";
 import uuid from "react-native-uuid";
 import parseValue from "../../helpers/parseValue";
-import { useMMKVObject } from "react-native-mmkv";
+import { useExpenseEventHandler } from "../../hooks/useExpenseEventHandler";
 
 type AddExpenseModalProps = {
   isVisible: boolean;
@@ -23,10 +23,13 @@ const AddExpenseModal = ({
   setIsVisible
 }: AddExpenseModalProps) => {
   const theme = useTheme();
-  const [ type, setType ] = useState<Expense['type']>('transaction');
+  const {
+    state,
+    addExpenseEvent,
+  } = useExpenseEventHandler();
+  const [ type, setType ] = useState<Expense['type']>('variable');
   const [ description, setDescription ] = useState<string>();
   const [ expense, setExpense ] = useState<string>();
-  const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
   const props: Partial<PickerItemProps> = {
     color: theme.color.primary,
     style: {
@@ -47,15 +50,19 @@ const AddExpenseModal = ({
       type,
       description,
       amount: parseValue(expense),
+      paid: type === 'fixed' ? [] : undefined,
       date: new Date().toISOString()
     };
-    setExpenses(expenses?.length ? [ ...expenses, expenseObject ] : [ expenseObject ]);
+    addExpenseEvent({
+      action: 'added',
+      expense: expenseObject,
+    })
   };
 
   useEffect(() => {
-    if (!expenses) return;
+    if (!state?.expenses) return;
     onRequestClose();
-  }, [ expenses ]);
+  }, [ state?.expenses ]);
 
   return (<View>
       <ScrollView>
@@ -70,7 +77,7 @@ const AddExpenseModal = ({
             textColor="primary"
             onValueChange={(item) => setType(item as Expense['type'])}
           >
-            <RNPicker.Item label="Buchung" value="transaction" {...props} />
+            <RNPicker.Item label="Buchung" value="variable" {...props} />
             <RNPicker.Item label="Fixe Kosten" value="fixed" {...props} />
           </Picker>
           <View>

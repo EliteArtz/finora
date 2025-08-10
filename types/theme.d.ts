@@ -1,9 +1,9 @@
-import theme from "../assets/style/theme";
+import lightTheme from "../assets/style/theme";
 
-type ThemeType = typeof theme;
+type LibraryTheme = typeof lightTheme;
 
 declare module 'styled-components/native' {
-  export interface DefaultTheme extends ThemeType {}
+  export interface DefaultTheme extends LibraryTheme {}
 }
 
 declare module "react" {

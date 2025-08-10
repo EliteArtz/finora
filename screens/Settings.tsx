@@ -1,6 +1,6 @@
 import Layout01 from '../layouts/Layout01';
 import Button from '../components/Button/Button';
-import { useMMKV, useMMKVString } from 'react-native-mmkv';
+import { useMMKV, useMMKVObject, useMMKVString } from 'react-native-mmkv';
 import styled, { css, useTheme } from 'styled-components/native';
 import Label from '../components/Label/Label';
 import { Picker as RNPicker, PickerItemProps } from '@react-native-picker/picker';
@@ -12,10 +12,10 @@ import React, { useState } from 'react';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import { Expense } from '../types/expenses.type';
 import { Platform } from 'react-native';
 import { Loan } from "../types/loans.type";
 import ConfirmModal from "../modals/ConfirmModal/ConfirmModal";
+import { useExpenseEventHandler } from "../hooks/useExpenseEventHandler";
 
 const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
@@ -28,9 +28,12 @@ const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
 `;
 
 const Settings = () => {
+  const {MMKVCurrent, MMKVEvents, state, expenseEvents} = useExpenseEventHandler();
   const MMKV = useMMKV();
   const themeObj = useTheme();
+  const [ loans ] = useMMKVObject<Loan[]>('loans');
   const [ isConfirmModalVisible, setConfirmModalVisible ] = useState(false);
+  const [ isConfirmHistoryModalVisible, setConfirmHistoryModalVisible ] = useState(false);
   const [ theme, setTheme ] = useMMKVString('theme');
   const props: Partial<PickerItemProps> = {
     color: themeObj.color.textPrimary,
@@ -42,11 +45,23 @@ const Settings = () => {
 
   const onConfirmDeletePress = () => {
     MMKV.clearAll();
+    MMKVCurrent.clearAll();
+    onConfirmHistoryDeletePress()
     setConfirmModalVisible(false);
   }
 
   const onCancelDeletePress = () => {
     setConfirmModalVisible(false)
+  }
+
+  const onConfirmHistoryDeletePress = () => {
+    MMKVEvents.clearAll();
+    setConfirmHistoryModalVisible(false)
+  }
+
+  const onCancelHistoryDeletePress = () => {
+
+    setConfirmHistoryModalVisible(false)
   }
 
   const importData = async () => {
@@ -57,22 +72,30 @@ const Settings = () => {
     if (result.canceled) return;
 
     const fileContent = await FileSystem.readAsStringAsync(result.assets[0].uri);
-    const data = JSON.parse(fileContent);
+    const data: {
+      state: typeof state,
+      expenseEvents: typeof expenseEvents,
+      loans: typeof loans,
+    } = JSON.parse(fileContent);
 
-    Object.keys(data)
-      .forEach((key) => {
-        MMKV.set(key, typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key]);
-      })
+    if(data.state) {
+      MMKVCurrent.set('state', JSON.stringify(data.state));
+    }
+    if(data.expenseEvents) {
+      MMKVEvents.set('expenseEvents', JSON.stringify(data.expenseEvents));
+    }
+    if(data.loans) {
+      MMKV.set('loans', JSON.stringify(data.loans));
+    }
   }
 
   const exportData = async () => {
     const json = JSON.stringify({
-      currentValue: MMKV.getNumber('currentValue'),
-      savings: MMKV.getNumber('savings'),
-      expenses: JSON.parse(MMKV.getString('expenses') || '[]') as Expense[],
-      loans: JSON.parse(MMKV.getString('loans') || '[]') as Loan[],
+      state,
+      expenseEvents,
+      loans
     });
-    const filename = `backup_${new Date().toISOString()
+    const filename = `Finora_${new Date().toISOString()
       .split('T')[0]}.json`;
     const path = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(path, json);
@@ -146,6 +169,28 @@ const Settings = () => {
         ]}
         isVisible={isConfirmModalVisible}
         setIsVisible={setConfirmModalVisible}
+      />
+      <Separator />
+      <Label weight="bold" size="l">Verlauf</Label>
+      <Button type="danger" onPress={() => setConfirmHistoryModalVisible(true)}>
+        <FontAwesomeIcon icon="history" color="danger" />
+        <Label color="danger" align="center">Verlauf löschen</Label>
+      </Button>
+      <ConfirmModal
+        heading="Wirklich den Verlauf löschen?"
+        subtext="Durch den Verlauf werden zeitliche Analysen angestellt."
+        buttons={[
+          {
+            type: 'danger',
+            onPress: onConfirmHistoryDeletePress,
+            children: <Label align="center" color="danger">Löschen</Label>
+          }, {
+            onPress: onCancelHistoryDeletePress,
+            children: <Label align="center">Abbrechen</Label>
+          }
+        ]}
+        isVisible={isConfirmHistoryModalVisible}
+        setIsVisible={setConfirmHistoryModalVisible}
       />
     </Style_Settings>
   </Layout01>);

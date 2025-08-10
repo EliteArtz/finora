@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components/native";
-import { useMMKVObject } from "react-native-mmkv";
 import { Expense } from "../../types/expenses.type";
 import React, { useRef } from "react";
 import Label from "../Label/Label";
@@ -11,6 +10,7 @@ import Pressable from "../Pressable/Pressable";
 import Swipeable, { SwipeableMethods, SwipeableProps } from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Vibration, View } from "react-native";
 import numberCurrency from "../../helpers/numberCurrency";
+import { useExpenseEventHandler } from "../../hooks/useExpenseEventHandler";
 
 
 type ItemProps = {
@@ -68,11 +68,11 @@ const Item = ({
   const threshold = 200;
   const ref = useRef<SwipeableMethods>(null);
   const height = useSharedValue<number | undefined>(undefined);
-  const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
+  const {state, addExpenseEvent} = useExpenseEventHandler()
 
   const renderRightActions: SwipeableProps['renderRightActions'] = (progress, translation) => {
     useAnimatedReaction(() => translation.value, (prepared, previous) => {
-      if(prepared > 0) return;
+      if (prepared > 0) return;
       if (previous && Math.abs(previous) < threshold && Math.abs(prepared) >= threshold) {
         runOnJS(Vibration.vibrate)(vibration)
       }
@@ -84,7 +84,7 @@ const Item = ({
 
   const renderLeftActions: SwipeableProps['renderLeftActions'] = (progress, translation) => {
     useAnimatedReaction(() => translation.value, (prepared, previous) => {
-      if(prepared < 0) return;
+      if (prepared < 0) return;
       if (previous && Math.abs(previous) < threshold && Math.abs(prepared) >= threshold) {
         runOnJS(Vibration.vibrate)(vibration)
       }
@@ -95,8 +95,11 @@ const Item = ({
   }
 
   const onDeletePress = () => {
-    const newExpenses = expenses?.filter(expense => expense.id !== id);
-    setExpenses(newExpenses);
+    const previousExpense = state?.expenses?.find(expense => expense.id === id);
+    addExpenseEvent({
+      action: 'deleted',
+      expense: previousExpense,
+    })
     setEditExpenseModalVisible(false);
   };
 
@@ -121,7 +124,7 @@ const Item = ({
 
   return (<Swipeable
     ref={ref}
-    renderRightActions={type === 'transaction' ? renderRightActions : undefined}
+    renderRightActions={type === 'variable' ? renderRightActions : undefined}
     renderLeftActions={renderLeftActions}
     overshootRight={false}
     overshootLeft={false}

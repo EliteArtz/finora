@@ -32,8 +32,8 @@ const InfoExpenseModal = ({
   setIsVisible,
   setIsEditModalVisible
 }: InfoExpenseModalProps) => {
-  const paid = expense?.paid && Math.min(expense.paid.reduce((acc, x) => acc + x, 0), expense.amount)
-  const rest = expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x, 0) || 0, expense.amount));
+  const paid = expense?.paid && Math.min(expense.paid.reduce((acc, x) => acc + x.amount, 0), expense.amount)
+  const rest = expense.amount - (Math.min(expense.paid?.reduce((acc, x) => acc + x.amount, 0) || 0, expense.amount));
   const onRequestClose = () => {
     setIsVisible(false);
   }

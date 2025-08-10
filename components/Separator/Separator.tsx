@@ -11,7 +11,7 @@ type Style_SeparatorProps = {
 const Style_Separator = styled.View<Style_SeparatorProps>`
   height: 1px;
   ${({ theme, $space }) => css`
-    background-color: ${theme.color.light_transparency};
+    background-color: ${theme.color.lightTransparency};
     ${$space !== 'none' && css`
       margin-block: ${theme.size[$space].px};
     `};

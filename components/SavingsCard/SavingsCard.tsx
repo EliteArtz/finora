@@ -6,8 +6,9 @@ import FontAwesomeIcon from '../FontAwesomeIcon/FontAwesomeIcon';
 import Pressable from '../Pressable/Pressable';
 import styled from 'styled-components/native';
 import React, { useState } from 'react';
-import { useMMKVNumber } from 'react-native-mmkv';
 import InputValueModal from '../../modals/InputValueModal/InputValueModal';
+import uuid from "react-native-uuid";
+import { useExpenseEventHandler } from "../../hooks/useExpenseEventHandler";
 
 const Style_Item = styled(Pressable)`
   flex-direction: row;
@@ -15,31 +16,44 @@ const Style_Item = styled(Pressable)`
 `;
 
 const SavingsCard = () => {
+  const {
+    state,
+    addExpenseEvent,
+  } = useExpenseEventHandler();
   const [ isModalVisible, setModalVisible ] = useState(false);
-  const [ savings, setSavings ] = useMMKVNumber('savings');
 
-  return (
-    <BaseCard>
-      <Style_Item onPress={() => setModalVisible(true)}>
-        <View style={{ flex: 1 }}>
-          <Label color="textSecondary" size="s">
-            Ersparnis
-          </Label>
-          <Label color="textSecondary" weight="bold">
-            {numberCurrency(savings)}
-          </Label>
-        </View>
-        <FontAwesomeIcon icon="pen" color="textSecondary" />
-        <InputValueModal
-          label="Ersparnis"
-          isVisible={isModalVisible}
-          setIsVisible={setModalVisible}
-          value={savings}
-          setValue={setSavings}
-        />
-      </Style_Item>
-    </BaseCard>
-  );
+  const setValue = (value: number | undefined) => {
+    addExpenseEvent({
+      action: 'updated',
+      savings: value ? {
+        id: uuid.v4(),
+        amount: value,
+        date: new Date().toISOString(),
+      } : null,
+      previousExpense: state?.savings
+    })
+  }
+
+  return (<BaseCard>
+    <Style_Item onPress={() => setModalVisible(true)}>
+      <View style={{ flex: 1 }}>
+        <Label color="textSecondary" size="s">
+          Ersparnis
+        </Label>
+        <Label color="textSecondary" weight="bold">
+          {numberCurrency(state?.savings?.amount)}
+        </Label>
+      </View>
+      <FontAwesomeIcon icon="pen" color="textSecondary" />
+      <InputValueModal
+        label="Ersparnis"
+        isVisible={isModalVisible}
+        setIsVisible={setModalVisible}
+        value={state?.savings?.amount}
+        setValue={setValue}
+      />
+    </Style_Item>
+  </BaseCard>);
 };
 
 export default SavingsCard;

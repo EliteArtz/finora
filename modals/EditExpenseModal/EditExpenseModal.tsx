@@ -8,11 +8,12 @@ import Separator from '../../components/Separator/Separator';
 import numberCurrency from '../../helpers/numberCurrency';
 import Pressable from '../../components/Pressable/Pressable';
 import React, { useEffect, useState } from 'react';
-import { useMMKVObject } from 'react-native-mmkv';
-import { Expense } from '../../types/expenses.type';
+import { BaseExpense, Expense } from '../../types/expenses.type';
 import styled, { css } from 'styled-components/native';
 import { View } from 'react-native';
 import parseValue from "../../helpers/parseValue";
+import uuid from "react-native-uuid";
+import { useExpenseEventHandler } from "../../hooks/useExpenseEventHandler";
 
 type EditExpenseModalProps = {
   expense: Expense;
@@ -20,16 +21,17 @@ type EditExpenseModalProps = {
   setVisible: React.Dispatch<React.SetStateAction<EditExpenseModalProps['visible']>>;
 }
 
-type EditExpenseProps = {
-  id: Expense['id']; type: Expense['type']; description: Expense['description']; amount: string; paid?: Expense['paid'];
+type EditExpenseProps = Omit<Expense, 'amount'> & {
+  amount: string;
 }
 
-const Style_FlatList = styled.FlatList.attrs(({ theme }) => ({
-  contentContainerStyle: {
-    gap: theme.size.s.value * 16,
-    padding: theme.size.s.value * 16,
-  }
-}))`
+const Style_FlatList = styled.FlatList
+  .attrs(({ theme }) => ({
+    contentContainerStyle: {
+      gap: theme.size.s.value * 16,
+      padding: theme.size.s.value * 16,
+    }
+  }))`
   max-height: 100px;
   ${({ theme }) => css`
     border-radius: ${theme.size.s.px};
@@ -42,7 +44,10 @@ const EditExpenseModal = ({
   visible,
   setVisible
 }: EditExpenseModalProps) => {
-  const [ expenses, setExpenses ] = useMMKVObject<Expense[]>('expenses');
+  const {
+    state,
+    addExpenseEvent,
+  } = useExpenseEventHandler();
   const [ editPaidValue, setEditPaidValue ] = useState<string>();
   const [ editExpense, setEditExpense ] = useState<EditExpenseProps>();
 
@@ -51,14 +56,16 @@ const EditExpenseModal = ({
   };
 
   const onDeletePress = () => {
-    const newExpenses = expenses?.filter(e => e.id !== expense.id);
-    setExpenses(newExpenses);
+    addExpenseEvent({
+      action: 'deleted',
+      expense: state?.expenses?.find(e => e.id === expense.id)
+    })
     setVisible(false);
   };
 
-  const onDeletePaidPress = (index: number) => {
+  const onDeletePaidPress = (id: string) => {
     if (!editExpense) return;
-    const newPaid = editExpense?.paid?.filter((_, i) => i !== index);
+    const newPaid = editExpense?.paid?.filter((item) => item.id !== id);
     setEditExpense({
       ...editExpense,
       paid: newPaid
@@ -74,21 +81,28 @@ const EditExpenseModal = ({
 
   const onSubmitEdit = () => {
     if (!editExpense || !editExpense.amount) return;
-    const newExpenses = expenses?.map(expense => {
-      if (expense.id !== editExpense.id) return expense;
-      return {
-        ...expense, ...editExpense,
+    const previousExpense = state?.expenses?.find(expense => expense.id === editExpense.id);
+    addExpenseEvent({
+      action: 'updated',
+      expense: {
+        ...previousExpense, ...editExpense,
         amount: parseValue(editExpense.amount)
-      };
-    });
-    setExpenses(newExpenses);
+      },
+      previousExpense
+    })
     setVisible(false);
   }
 
   const onSubmitPaidEdit = () => {
+    if (!editPaidValue) return;
+    const editPaid: BaseExpense = {
+      id: uuid.v4(),
+      amount: parseValue(editPaidValue),
+      date: new Date().toISOString(),
+    }
     editPaidValue && onEditChange({
       paid: [
-        ...(editExpense?.paid || []), parseValue(editPaidValue)
+        ...(editExpense?.paid || []), editPaid
       ]
     })
     setEditPaidValue(undefined);
@@ -96,11 +110,8 @@ const EditExpenseModal = ({
 
   useEffect(() => {
     setEditExpense({
-      id: expense.id,
-      type: expense.type,
-      description: expense.description,
+      ...expense,
       amount: expense.amount.toString(),
-      paid: expense.paid
     });
   }, [ expense ]);
 
@@ -143,15 +154,18 @@ const EditExpenseModal = ({
       <Label size="s" color="textSecondary">Bezahlt</Label>
       <Style_FlatList
         data={editExpense.paid}
+        keyExtractor={(item) => (item as BaseExpense).id}
         renderItem={({
-          item: paid,
-          index
-        }) => (<RowView key={index} style={{ justifyContent: 'space-between' }}>
-          <Label color="textPrimary" weight="bold">{typeof paid === 'number' && numberCurrency(paid)}</Label>
-          <Pressable onPress={() => onDeletePaidPress(index)}>
-            <FontAwesomeIcon color="danger" size="l" icon="xmark" />
-          </Pressable>
-        </RowView>)}
+          item
+        }) => {
+          const paid = item as BaseExpense;
+          return (<RowView justifyContent="space-between">
+            <Label color="textPrimary" weight="bold">{numberCurrency(paid.amount)}</Label>
+            <Pressable onPress={() => onDeletePaidPress(paid.id)}>
+              <FontAwesomeIcon color="danger" size="l" icon="xmark" />
+            </Pressable>
+          </RowView>)
+        }}
       />
       <RowView>
         <Input

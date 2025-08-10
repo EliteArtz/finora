@@ -16,8 +16,7 @@ import Separator from "../../components/Separator/Separator";
 import parseValue from "../../helpers/parseValue";
 
 type AddLoanModalProps = {
-  isVisible: boolean;
-  setIsVisible: React.Dispatch<React.SetStateAction<AddLoanModalProps['isVisible']>>;
+  isVisible: boolean; setIsVisible: React.Dispatch<React.SetStateAction<AddLoanModalProps['isVisible']>>;
 }
 
 const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
@@ -33,15 +32,18 @@ const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => ({
   `}
 `
 
-const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
+const AddLoanModal = ({
+  isVisible,
+  setIsVisible
+}: AddLoanModalProps) => {
   const [ draftLoan, setDraftLoan ] = useState<string>();
   const [ description, setDescription ] = useState<string>();
-  const [ draftLoans, setDraftLoans ] = useState<number[]>();
+  const [ draftLoans, setDraftLoans ] = useState<Loan['lend']>();
   const [ , setLoans ] = useMMKVObject<Loan[]>('loans');
   const onRequestClose = () => setIsVisible(false);
 
-  const onDeleteLoanPress = (index: number) => {
-    setDraftLoans(draftLoans?.filter((_, id) => id !== index))
+  const onDeleteLoanPress = (id: number) => {
+    setDraftLoans(draftLoans?.filter((_, index) => index !== id))
   }
 
   const onAddDraftLoanPress = () => {
@@ -59,16 +61,14 @@ const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
       lend: draftLoans,
     };
     setLoans(loans => ([
-      ...(loans || []),
-      loanObj
+      ...(loans || []), loanObj
     ]));
     setDescription(undefined);
     setDraftLoan(undefined);
     setDraftLoans(undefined);
     setIsVisible(false);
   }
-  return (
-    <View>
+  return (<View>
       <ScrollView>
         <Modal
           visible={isVisible}
@@ -83,16 +83,14 @@ const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
           <Separator space="none" />
           <Label size="s" color="danger">Geliehen</Label>
           <Style_ScrollView>
-            {draftLoans?.map((loan, index) => (
-              <RowView key={index} style={{ justifyContent: 'space-between' }}>
+            {draftLoans?.map((loan, index) => (<RowView key={index} style={{ justifyContent: 'space-between' }}>
                 <Label color="textPrimary" weight="bold">
                   {numberCurrency(loan)}
                 </Label>
                 <Pressable onPress={() => onDeleteLoanPress(index)}>
                   <FontAwesomeIcon color="danger" size="l" icon="xmark" />
                 </Pressable>
-              </RowView>
-            ))}
+              </RowView>))}
           </Style_ScrollView>
           <RowView>
             <Input
@@ -112,8 +110,7 @@ const AddLoanModal = ({ isVisible, setIsVisible }: AddLoanModalProps) => {
           </Button>
         </Modal>
       </ScrollView>
-    </View>
-  )
+    </View>)
 }
 
 export default AddLoanModal;
