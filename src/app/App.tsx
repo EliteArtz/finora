@@ -23,6 +23,7 @@ import Settings from '../screens/Settings';
 import { useMMKVString } from 'react-native-mmkv';
 import LoanFunds from '../screens/LoanFunds';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
+import Analytics from "../screens/Analytics";
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -55,6 +56,14 @@ const RootStack = createDrawerNavigator({
         title: 'Schulden',
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="hand-holding-dollar" color={focused ? 'primary' : 'textSecondary'} />)
+      },
+    },
+    Analytics: {
+      screen: Analytics,
+      options: {
+        title: 'Analyse',
+        drawerIcon: ({ focused }) => (
+          <FontAwesomeIcon icon="chart-line" color={focused ? 'primary' : 'textSecondary'} />)
       },
     },
     Settings: {

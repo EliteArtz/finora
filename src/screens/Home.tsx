@@ -3,9 +3,9 @@ import Layout01 from '../layouts/Layout01';
 import styled, { css } from 'styled-components/native';
 import TotalCard from '../components/TotalCard/TotalCard';
 import ExpensesCard from '../components/ExpensesCard/ExpensesCard';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ExpenseButton from '../components/ExpenseButton/ExpenseButton';
 import SavingsCard from "../components/SavingsCard/SavingsCard";
+import SafeScrollView from "../components/ScrollView/SafeScrollView";
 
 
 const Style_BottomAction = styled.View`
@@ -24,27 +24,9 @@ const Style_CardContainer = styled.View`
     gap: ${(theme.size.s.value / 1.5) * 16}px;
   `}
 `;
-
-const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
-  const insets = useSafeAreaInsets();
-  return {
-    contentContainerStyle: {
-      gap: theme.size.l.value * 16,
-      paddingBottom: insets.bottom,
-    }
-  };
-})`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  ${({ theme }) => css`
-    padding-inline: ${theme.size.l.px};
-  `}
-`;
-
 const Home = () => {
   return (<Layout01>
-    <Style_ScrollView>
+    <SafeScrollView>
       <TotalCard />
       <SavingsCard />
       <Style_CardContainer>
@@ -53,7 +35,7 @@ const Home = () => {
       <Style_CardContainer>
         <ExpensesCard type="variable" />
       </Style_CardContainer>
-    </Style_ScrollView>
+    </SafeScrollView>
     <Style_BottomAction>
       <ExpenseButton />
     </Style_BottomAction>
