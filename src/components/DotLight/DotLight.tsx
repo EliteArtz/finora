@@ -5,7 +5,7 @@ type DotLightProps = {
   color?: keyof typeof theme.color;
 }
 
-const Styled_DotLight = styled.View<{ $color: NonNullable<DotLightProps['color']> }>`
+const Style_DotLight = styled.View<{ $color: NonNullable<DotLightProps['color']> }>`
   aspect-ratio: 1/1;
   border-radius: 999px;
   ${({ theme, $color }) => css`
@@ -16,7 +16,7 @@ const Styled_DotLight = styled.View<{ $color: NonNullable<DotLightProps['color']
 
 const DotLight = ({ color = 'primary' }: DotLightProps) => {
 
-  return (<Styled_DotLight $color={color} />)
+  return (<Style_DotLight $color={color} />)
 }
 
 export default DotLight;

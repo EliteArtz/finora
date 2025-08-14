@@ -39,35 +39,45 @@ const Style_TopActions = styled.View`
   `}
 `;
 
-const Layout01 = ({ children, isSettings=false }: Layout01Props) => {
+const Layout01 = ({
+  children,
+  isSettings = false
+}: Layout01Props) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
   const onNavigatePress = () => {
-    navigation.navigate(isSettings ? 'Home' : 'Settings')
+    if (isSettings && navigation.canGoBack()) {
+      navigation.goBack();
+    } else if (isSettings) {
+      navigation.navigate('Home')
+    } else {
+      navigation.navigate('Settings')
+    }
   }
 
-  return (
-    <Style_SafeView
-      style={{
-        paddingTop: insets.top,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-      }}
-    >
-      <Style_Layout01>
-        <Style_TopActions>
-          <Button onPress={navigation.openDrawer}>
-            <FontAwesomeIcon color="primary" icon="bars" />
-          </Button>
-          <Button onPress={onNavigatePress}>
-            <FontAwesomeIcon color="primary" icon={isSettings ? 'home' : 'gear'} />
-          </Button>
-        </Style_TopActions>
-        {children}
-      </Style_Layout01>
-    </Style_SafeView>
-  );
+  return (<Style_SafeView
+    style={{
+      paddingTop: insets.top,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }}
+  >
+    <Style_Layout01>
+      <Style_TopActions>
+        <Button onPress={navigation.openDrawer}>
+          <FontAwesomeIcon color="primary" icon="bars" />
+        </Button>
+        <Button onPress={onNavigatePress}>
+          <FontAwesomeIcon
+            color="primary"
+            icon={isSettings && navigation.canGoBack() ? 'arrow-left' : isSettings ? 'home' : 'gear'}
+          />
+        </Button>
+      </Style_TopActions>
+      {children}
+    </Style_Layout01>
+  </Style_SafeView>);
 };
 
 export default Layout01;

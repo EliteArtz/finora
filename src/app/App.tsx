@@ -36,7 +36,7 @@ library.add(fab, fas, far);
 
 const RootStack = createDrawerNavigator({
   initialRouteName: 'Home',
-  backBehavior: 'initialRoute',
+  backBehavior: 'history',
   screenOptions: {
     drawerType: 'slide',
     drawerHideStatusBarOnOpen: true,
@@ -62,6 +62,7 @@ const RootStack = createDrawerNavigator({
       screen: Analytics,
       options: {
         title: 'Analyse',
+        lazy: false,
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="chart-line" color={focused ? 'primary' : 'textSecondary'} />)
       },
