@@ -38,8 +38,7 @@ const RootStack = createDrawerNavigator({
   initialRouteName: 'Home',
   backBehavior: 'history',
   screenOptions: {
-    drawerType: 'slide',
-    drawerHideStatusBarOnOpen: true,
+    drawerType: 'front',
     swipeEdgeWidth: 50,
     headerShown: false,
   },

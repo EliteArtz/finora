@@ -3,23 +3,30 @@ import styled, { css } from 'styled-components/native';
 import theme from "../../assets/style/theme";
 import React from "react";
 
-type RowViewProps = ViewProps & {
+type RowViewProps = {
   gap?: keyof typeof theme.size;
   justifyContent?: React.CSSProperties['justifyContent']
+  alignItems?: React.CSSProperties['alignItems']
+  flexWrap?: React.CSSProperties['flexWrap']
 }
 
-const Style_RowView = styled.View<{ $gap: NonNullable<RowViewProps['gap']>; $justifyContent: NonNullable<RowViewProps['justifyContent']> }>`
+type Style_RowViewProps = Required<{
+  [K in keyof RowViewProps as `$${K}`]: RowViewProps[K];
+}>
+
+const Style_RowView = styled.View<Style_RowViewProps>`
   flex-direction: row;
-  align-items: center;
-  ${({ theme, $gap, $justifyContent }) => css`
+  ${({ theme, $gap, $justifyContent, $alignItems, $flexWrap }) => css`
     justify-content: ${$justifyContent};
-    gap: ${theme.size[$gap].px}
+    align-items: ${$alignItems};
+    flex-wrap: ${$flexWrap};
+    column-gap: ${theme.size[$gap].px}
   `}
 `;
 
-const RowView = ({ gap='m', justifyContent='flex-start', ...rest }: RowViewProps) => {
+const RowView = ({ gap='m', justifyContent='flex-start', alignItems='center', flexWrap='wrap', ...rest }:  ViewProps & RowViewProps) => {
   return (
-    <Style_RowView {...rest} $gap={gap} $justifyContent={justifyContent} />
+    <Style_RowView {...rest} $gap={gap} $justifyContent={justifyContent} $alignItems={alignItems} $flexWrap={flexWrap} />
   );
 };
 

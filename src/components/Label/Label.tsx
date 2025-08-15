@@ -18,6 +18,7 @@ type StyleLabelProps = {
 };
 
 const Style_Label = styled.Text<StyleLabelProps>`
+    flex-shrink: 1;
   ${({ theme, $color, $size, $weight, $align }) => css`
     color: ${theme['color'][$color]};
     font-size: ${theme.size[$size].px};

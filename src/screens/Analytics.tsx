@@ -14,18 +14,8 @@ import listLastExpenseByDay from "../helpers/listLastExpenseByDay";
 import Checkbox from "../components/Checkbox/Checkbox";
 import Separator from "../components/Separator/Separator";
 import { useIsFocused } from "@react-navigation/native";
-
-const Style_ToolTipContainer = styled.View`
-  ${({ theme }) => css`
-    background-color: ${theme.color.surface};
-    elevation: 5;
-    box-shadow: 0 0 ${theme.color.primary};
-    width: 100px;
-    gap: ${theme.size.s.px};
-    padding: ${theme.size.s.px};
-    border-radius: ${theme.size.s.px};
-  `}
-`;
+import Pressable from "../components/Pressable/Pressable";
+import FontAwesomeIcon from "../components/FontAwesomeIcon/FontAwesomeIcon";
 
 const Style_View = styled.View`
   ${({ theme }) => css`
@@ -55,6 +45,9 @@ const Analytics = () => {
 
   const [ remainingBalanceLineData, setRemainingBalanceLineData ] = useState<lineDataItem[]>([]);
   const [ balanceLineData, setBalanceLineData ] = useState<lineDataItem[]>([]);
+  const [ currentPointDatas, setCurrentPointDatas ] = useState<{
+    remainingBalanceLineData: lineDataItem; balanceLineData: lineDataItem
+  } | undefined>();
   const [ parentWidth, setParentWidth ] = useState<number>(0);
   const [ isParentWidth, setIsParentWidth ] = useState<boolean>(false);
 
@@ -86,9 +79,18 @@ const Analytics = () => {
   lastDay.setDate(0);
 
   const remainingDays = lastDay.getDate() - today.getDate();
-  const averageRemainingExpense = state?.remainingBalance && Math.max(state?.remainingBalance / remainingDays, 0);
+  const averageRemainingExpense = useMemo(() => state?.remainingBalance &&
+    Math.max(state?.remainingBalance / remainingDays, 0), [ state ]);
 
+  const averageDailyVariableExpense = useMemo(() => expenseEvents && expenseEvents
+    ?.filter(event => event.expense?.type === 'variable' && event.action === 'added')
+    ?.reduce((acc, event) => acc + event.expense!.amount, 0) / today.getDate(), [ state, expenseEvents ]);
+  const daysUntilNegative = useMemo(() => state?.remainingBalance && averageDailyVariableExpense &&
+    state.remainingBalance / averageDailyVariableExpense, [ state, averageDailyVariableExpense ]);
+  const dateUntilNegative = new Date(today);
+  daysUntilNegative && dateUntilNegative.setDate(today.getDate() + daysUntilNegative);
 
+  // Set visual line data (remainingbalance data vs. currentbalance data)
   useEffect(() => {
     setRemainingBalanceLineData(lastEvents.map(({ remainingBalance }, i) => {
       const indexDate = new Date(startDate)
@@ -97,19 +99,63 @@ const Analytics = () => {
       return {
         value: remainingBalance,
         dataPointText: numberCurrency(remainingBalance),
-        label: !isParentWidth || indexDate.getDate() % 2 === 0 ? Intl.DateTimeFormat(undefined, {
+        date: indexDate.toISOString(),
+        labelTextStyle: {
+          ...linechartStyle.xAxisLabelTextStyle,
+          display: !isParentWidth || indexDate.getDate() % 2 === 0 ? 'flex' : 'none',
+
+        },
+        label: Intl.DateTimeFormat(undefined, {
           day: '2-digit',
           month: '2-digit'
         })
-          .format(indexDate) : undefined
+          .format(indexDate)
       }
     }))
     setBalanceLineData(lastEvents.map(({ balance }) => ({
       value: balance?.amount,
-      dataPointText: numberCurrency(balance?.amount),
-      dataPointWidth: 20,
     })))
   }, [ isParentWidth, lastEvents ]);
+
+  useEffect(() => {
+    if (isFocused) return;
+    setIsParentWidth(false);
+  }, [ isFocused ]);
+
+  const warningRemainingBalance = <Pressable>
+    <Label size="s" color="warning">Anhand Ihrer variablen Ausgaben könnte Ihr Restsaldo im Minus
+      fallen!</Label>
+    <Style_PaddedView>
+      <RowView justifyContent="space-between">
+        <Label size="s" color="textSecondary">Bisherige durchschn. Tagesausgabe:</Label>
+        <Label size="s" weight="bold">{numberCurrency(averageDailyVariableExpense)}</Label>
+      </RowView>
+    </Style_PaddedView>
+    <Style_PaddedView>
+      <RowView justifyContent="space-between">
+        <Label size="s" color="textSecondary">Wann es im Minus sein könnte:</Label>
+        <Label size="s" weight="bold">{Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
+          .format(dateUntilNegative)}</Label>
+      </RowView>
+      <RowView gap="s" flexWrap="nowrap">
+        <FontAwesomeIcon icon="arrow-right" size="s" color="textSecondary" />
+        <Label size="s" color="textSecondary">Beachten Sie die max. durchschnittliche Tagesausgabe, um am Ende
+          des Monats positiv zu bleiben.</Label>
+      </RowView>
+    </Style_PaddedView>
+  </Pressable>;
+
+  const remainingBalanceNegative = <Pressable>
+    <Label size="s" color="danger">Ihr Restsaldo liegt im Minus!</Label>
+    <RowView flexWrap="nowrap">
+      <FontAwesomeIcon icon="arrow-right" size="s" color="textSecondary" />
+      <Label size="s" color="textSecondary">Können fixe Kosten verringert werden?</Label>
+    </RowView>
+    <RowView flexWrap="nowrap">
+      <FontAwesomeIcon icon="arrow-right" size="s" color="textSecondary" />
+      <Label size="s" color="textSecondary">Benötigen/Nutzen Sie wirklich alle Abonnements zurzeit?</Label>
+    </RowView>
+  </Pressable>
 
   return isFocused && <Layout01>
     <SafeScrollView>
@@ -122,7 +168,27 @@ const Analytics = () => {
           })
             .format(startDate)} - {Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
             .format(today)}</Label>
-          <View style={{ overflow: 'hidden' }} onLayout={e => setParentWidth(e.nativeEvent.layout.width)}>
+          {currentPointDatas?.remainingBalanceLineData && currentPointDatas.balanceLineData && <View>
+            <Label>Datenpunkt</Label>
+            <RowView justifyContent="space-between">
+              <Label size="s" color="textSecondary">Datum</Label>
+              <Label size="s" weight="bold">{currentPointDatas.remainingBalanceLineData.label}</Label>
+            </RowView>
+            <RowView justifyContent="space-between">
+              <Label size="s" color="textSecondary">Aktueller Saldo</Label>
+              <Label size="s" weight="bold">{numberCurrency(currentPointDatas.balanceLineData.value)}</Label>
+            </RowView>
+            <RowView justifyContent="space-between">
+              <Label size="s" color="textSecondary">Restsaldo</Label>
+              <Label
+                size="s"
+                color={state?.remainingBalance && state.remainingBalance < 0 ?
+                  'danger' :
+                  daysUntilNegative && daysUntilNegative < remainingDays ? 'warning' : 'primary'}
+                weight="bold"
+              >{numberCurrency(currentPointDatas?.remainingBalanceLineData?.value)}</Label>
+            </RowView></View>}
+          <View onLayout={e => setParentWidth(e.nativeEvent.layout.width)}>
             <LineChart
               {...linechartStyle}
               dataSet={[
@@ -133,13 +199,15 @@ const Analytics = () => {
                   strokeDashArray: [ 6, 6 ]
                 }
               ]}
+              width={parentWidth - 60}
               parentWidth={parentWidth - 20}
               adjustToWidth={isParentWidth}
               noOfSections={5}
               yAxisLabelSuffix=" €"
-              endSpacing={0}
+              endSpacing={!isParentWidth ? 10 : 0}
               initialSpacing={2}
               curveType={CurveType.QUADRATIC}
+              labelsExtraHeight={10}
               isAnimated
               animateOnDataChange
               xAxisLabelsAtBottom
@@ -150,38 +218,29 @@ const Analytics = () => {
               hideDataPoints
               hideRules
               scrollToEnd
+              getPointerProps={({ pointerIndex }: { pointerIndex: number }) => setCurrentPointDatas({
+                remainingBalanceLineData: remainingBalanceLineData[pointerIndex],
+                balanceLineData: balanceLineData[pointerIndex],
+              })}
               pointerConfig={{
-                pointerStripUptoDataPoint: true,
                 activatePointersOnLongPress: true,
-                pointerVanishDelay: 10000,
+                persistPointer: true,
                 pointerColor: theme.color.primary,
-                radius: 4,
                 showPointerStrip: false,
-                pointerLabelWidth: 120,
-                pointerLabelComponent: (items: lineDataItem[], _: [], i: number) => {
-                  const pointerDate = new Date();
-                  pointerDate.setDate(i)
-                  return <Style_ToolTipContainer>
-                    <View>
-                      <Label size="s" align="center" color="textSecondary">Saldo</Label>
-                      <Label size="s" align="center" weight="bold">{items[1].dataPointText}</Label>
-                    </View>
-
-                    <View>
-                      <Label size="s" align="center" color="textSecondary">Restsaldo</Label>
-                      <Label size="s" align="center" weight="bold">{items[0].dataPointText}</Label>
-                    </View>
-                  </Style_ToolTipContainer>
-                }
+                radius: 4,
               }}
             />
-            <RowView gap="s" justifyContent="center">
-              <DotLight color="lightTransparency" /><Label size="s" color="textSecondary">Saldo</Label>
-              <DotLight color="primary" /><Label size="s" color="textSecondary">Restsaldo</Label>
-            </RowView>
           </View>
+          <RowView gap="s" justifyContent="center">
+            <DotLight color="lightTransparency" /><Label size="s" color="textSecondary">Saldo</Label>
+            <DotLight color="primary" /><Label size="s" color="textSecondary">Restsaldo</Label>
+          </RowView>
           <Checkbox isActive={isParentWidth} setIsActive={setIsParentWidth}><Label size="s">Graph
             minimieren</Label></Checkbox>
+        </Style_View>
+      </BaseCard>
+      <BaseCard>
+        <Style_View>
           <Label>Aktueller Stand</Label>
           <RowView justifyContent="space-between">
             <Label size="s" color="textSecondary">Aktueller Saldo</Label>
@@ -189,16 +248,32 @@ const Analytics = () => {
           </RowView>
           <RowView justifyContent="space-between">
             <Label size="s" color="textSecondary">Restsaldo</Label>
-            <Label size="s" weight="bold">{numberCurrency(state?.remainingBalance)}</Label>
+            <Label
+              size="s"
+              color={state?.remainingBalance && state.remainingBalance < 0 ?
+                'danger' :
+                daysUntilNegative && daysUntilNegative < remainingDays ? 'warning' : 'primary'}
+              weight="bold"
+            >{numberCurrency(state?.remainingBalance)}</Label>
           </RowView>
           <Separator space="none" />
-          <Label>Empfehlungen</Label>
-          <Label size="s" color="textSecondary">Um im positiven Ergebnis zu bleiben:</Label>
+          <Label>Empfehlungen / Maßnahmen</Label>
+          {state?.remainingBalance && state?.remainingBalance < 0 ?
+            remainingBalanceNegative :
+            daysUntilNegative && daysUntilNegative < remainingDays && warningRemainingBalance}
+          <Label size="s" color="primary">Um im positiven Ergebnis zu bleiben, können Sie folgendes
+            berücksichtigen:</Label>
           <Style_PaddedView>
-            <RowView justifyContent="space-between">
-              <Label size="s" color="textSecondary">Max. tägliche Ausgabe:</Label>
-              <Label size="s" weight="bold">{numberCurrency(averageRemainingExpense)}</Label>
-            </RowView>
+            <Pressable>
+              <RowView justifyContent="space-between">
+                <Label size="s">Durschn. Tagesausgabe:</Label>
+                <Label size="s" weight="bold">{numberCurrency(averageRemainingExpense)}</Label>
+              </RowView>
+              {state?.remainingBalance && state.remainingBalance < 0 && <RowView>
+                <FontAwesomeIcon icon="arrow-right" size="s" color="textSecondary" />
+                <Label size="s" color="textSecondary">Das bedeutet einen sofortigen Ausgabestopp!</Label>
+              </RowView>}
+            </Pressable>
           </Style_PaddedView>
         </Style_View>
       </BaseCard>
