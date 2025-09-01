@@ -14,6 +14,7 @@ import Pressable from '../components/Pressable/Pressable';
 import Separator from '../components/Separator/Separator';
 import LoanButton from '../components/LoanButton/LoanButton';
 import EditLoanModal from "../modals/EditLoanModal/EditLoanModal";
+import { useIsFocused } from "@react-navigation/native";
 
 const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
   const insets = useSafeAreaInsets();
@@ -54,12 +55,12 @@ const Style_Item = styled(Pressable)`
 `;
 
 const Style_Check = styled.View`
-position: absolute;
+  position: absolute;
   right: 0;
   border-radius: 999px;
   ${({ theme }) => css`
     background-color: ${theme.color.surface};
-    transform: translate(${theme.size.l.value*8}px, -${theme.size.l.value*8}px);
+    transform: translate(${theme.size.l.value * 8}px, -${theme.size.l.value * 8}px);
   `}
 `
 
@@ -74,6 +75,7 @@ const Style_BottomAction = styled.View`
 `;
 
 const LoanFunds = () => {
+  const isFocused = useIsFocused();
   const [ loans ] = useMMKVObject<Loan[]>('loans');
   const [ loanId, setLoanId ] = useState<Loan['id']>();
   const [ isEditModalVisible, setIsEditModalVisible ] = useState(false);
@@ -94,7 +96,7 @@ const LoanFunds = () => {
     const rest = totalLend - totalReturned;
     return (<BaseCard key={id}>
       {rest === 0 && <Style_Check>
-        <FontAwesomeIcon icon='check-circle' color='success' size='l' />
+        <FontAwesomeIcon icon="check-circle" color="success" size="l" />
       </Style_Check>}
       <Style_Item onPress={() => onItemPress(id)}>
         <RowView>
@@ -134,16 +136,16 @@ const LoanFunds = () => {
     </BaseCard>);
   }
 
-  return (<Layout01>
-      <Style_ScrollView>
-        <Label size="xl" weight="bold">Schulden</Label>
-        {loans?.map(renderItem)}
-        <EditLoanModal loanId={loanId} visible={isEditModalVisible} setVisible={setIsEditModalVisible} />
-      </Style_ScrollView>
-      <Style_BottomAction>
-        <LoanButton />
-      </Style_BottomAction>
-    </Layout01>);
+  return isFocused && (<Layout01>
+    <Style_ScrollView>
+      <Label size="xl" weight="bold">Schulden</Label>
+      {loans?.map(renderItem)}
+      <EditLoanModal loanId={loanId} visible={isEditModalVisible} setVisible={setIsEditModalVisible} />
+    </Style_ScrollView>
+    <Style_BottomAction>
+      <LoanButton />
+    </Style_BottomAction>
+  </Layout01>);
 };
 
 export default LoanFunds;

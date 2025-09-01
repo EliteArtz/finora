@@ -4,7 +4,7 @@ import SafeScrollView from "../components/ScrollView/SafeScrollView";
 import { CurveType, LineChart, lineDataItem } from "react-native-gifted-charts";
 import styled, { css, useTheme } from "styled-components/native";
 import { useExpenseEventHandler } from "../hooks/useExpenseEventHandler";
-import { useEffect, useMemo, useState } from "react";
+import { Key, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import numberCurrency from "../helpers/numberCurrency";
 import BaseCard from "../components/BaseCard/BaseCard";
@@ -16,6 +16,7 @@ import Separator from "../components/Separator/Separator";
 import { useIsFocused } from "@react-navigation/native";
 import Pressable from "../components/Pressable/Pressable";
 import FontAwesomeIcon from "../components/FontAwesomeIcon/FontAwesomeIcon";
+import Presets from "../components/Presets/Presets";
 
 const Style_View = styled.View`
   ${({ theme }) => css`
@@ -37,11 +38,28 @@ const Analytics = () => {
     state,
     expenseEvents
   } = useExpenseEventHandler();
+
+  const presetItems = [
+    {
+      label: 'Aktueller Monat',
+      key: 0
+    },
+    {
+      label: '2 Monate',
+      key: 1
+    },
+    {
+      label: '3 Monate',
+      key: 2
+    }
+  ];
+  const [ selectedPreset, setSelectedPreset ] = useState<Key>(presetItems[0].key);
+
   const {
     lastEvents,
     startDate,
     today
-  } = useMemo(() => listLastExpenseByDay(expenseEvents, 0), [ expenseEvents ]);
+  } = useMemo(() => listLastExpenseByDay(expenseEvents, Number(selectedPreset)), [ expenseEvents, selectedPreset ]);
 
   const [ remainingBalanceLineData, setRemainingBalanceLineData ] = useState<lineDataItem[]>([]);
   const [ balanceLineData, setBalanceLineData ] = useState<lineDataItem[]>([]);
@@ -168,6 +186,7 @@ const Analytics = () => {
           })
             .format(startDate)} - {Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
             .format(today)}</Label>
+          <Presets items={presetItems} selectedKey={selectedPreset} setSelectedKey={setSelectedPreset} />
           {currentPointDatas?.remainingBalanceLineData && currentPointDatas.balanceLineData && <View>
             <Label>Datenpunkt</Label>
             <RowView justifyContent="space-between">
