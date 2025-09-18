@@ -35,7 +35,7 @@ const Modal = ({
 }: ModalProps) => {
   const insets = useSafeAreaInsets();
   return (
-    <View>
+    <View style={{position: 'absolute'}}>
       <RNModal
         animationType={animationType}
         transparent={transparent}

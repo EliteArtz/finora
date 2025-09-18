@@ -1,14 +1,16 @@
 import React from 'react';
-import styled, { css } from 'styled-components/native';
+import styled, { css, DefaultTheme, useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import Button from '../components/Button/Button';
 import { DrawerNavigationProp, } from '@react-navigation/drawer';
-import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
+import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon'
+import Label from "../components/Label/Label";
+import { View } from "react-native";
+import { Screens } from "../constants/Screens";
 
 type Layout01Props = {
-  children?: React.ReactNode
-  isSettings?: boolean
+  children?: React.ReactNode; title?: string; onCTAClick?: () => void;
 }
 
 const Style_SafeView = styled.View`
@@ -33,28 +35,97 @@ const Style_TopActions = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   ${({ theme }) => css`
     padding: ${theme.size.l.px};
     padding-bottom: 0;
   `}
 `;
 
+const Style_BottomBar = styled.View`
+  display: grid;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: center;
+  ${({ theme }) => css`
+    background-color: ${theme.color.surface};
+    margin-top: -${theme.size.l.px};
+    border-top-left-radius: ${theme.size.l.px};
+    border-top-right-radius: ${theme.size.l.px};
+  `}
+`;
+
+const Style_BottomBarNavItem = styled.Pressable`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  ${({ theme }) => css`
+    padding-inline: ${theme.size.s.px};
+    padding-block: ${theme.size.l.px};
+    gap: ${theme.size.s.px};
+  `}
+`
+const Style_CTAButton = styled.View`
+  bottom: 75%;
+  height: 1px;
+`
+
 const Layout01 = ({
   children,
-  isSettings = false
+  title,
+  onCTAClick
 }: Layout01Props) => {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
-  const onNavigatePress = () => {
-    if (isSettings && navigation.canGoBack()) {
-      navigation.goBack();
-    } else if (isSettings) {
-      navigation.navigate('Home')
-    } else {
-      navigation.navigate('Settings')
-    }
+  const onHomePress = () => {
+    navigation.navigate('Home');
   }
+
+  const onAnalyticsPress = () => {
+    navigation.navigate('Analytics')
+  }
+
+  const onLoanFundsPress = () => {
+    navigation.navigate('LoanFunds')
+  }
+
+  const onSettingsPress = () => {
+    navigation.navigate('Settings')
+  }
+
+  const getColor = (routeName: string): keyof DefaultTheme['color']=> title === routeName ? 'primary' : 'textSecondary';
+
+  const Style_BottomBarLeft = <>
+    <Style_BottomBarNavItem onPress={onHomePress}>
+      <FontAwesomeIcon
+        color={getColor(Screens.HOME)}
+        icon="home"
+      />
+    </Style_BottomBarNavItem>
+    <Style_BottomBarNavItem onPress={onLoanFundsPress}>
+      <FontAwesomeIcon
+        color={getColor(Screens.LOANFUNDS)}
+        icon="dollar-sign"
+      />
+    </Style_BottomBarNavItem>
+  </>;
+
+  const Style_BottomBarRight = <>
+    <Style_BottomBarNavItem onPress={onAnalyticsPress}>
+      <FontAwesomeIcon
+        color={getColor(Screens.ANALYTICS)}
+        icon="chart-line"
+      />
+    </Style_BottomBarNavItem>
+    <Style_BottomBarNavItem onPress={onSettingsPress}>
+      <FontAwesomeIcon
+        color={getColor(Screens.SETTINGS)}
+        icon="cog"
+      />
+    </Style_BottomBarNavItem>
+  </>;
 
   return (<Style_SafeView
     style={{
@@ -65,17 +136,44 @@ const Layout01 = ({
   >
     <Style_Layout01>
       <Style_TopActions>
-        <Button onPress={navigation.openDrawer}>
-          <FontAwesomeIcon color="primary" icon="bars" />
-        </Button>
-        <Button onPress={onNavigatePress}>
+        <View>
+          {title &&
+            <Label size="l" weight="bold">{title}</Label>
+          }
+        </View>
+        <Button onPress={onSettingsPress}>
           <FontAwesomeIcon
             color="primary"
-            icon={isSettings && navigation.canGoBack() ? 'arrow-left' : isSettings ? 'home' : 'gear'}
+            icon="gear"
           />
         </Button>
       </Style_TopActions>
       {children}
+      <Style_BottomBar
+        style={{
+          paddingBottom: insets.bottom,
+          boxShadow: [
+            {
+              color: theme.color.textSecondary,
+              offsetX: 0,
+              offsetY: 10,
+              blurRadius: 20,
+            }
+          ]
+        }}
+      >
+        {Style_BottomBarLeft}
+        {onCTAClick && <Style_CTAButton>
+          <Button type="primary" padding="l" onPress={onCTAClick}>
+            <FontAwesomeIcon
+              color="surface"
+              size="l"
+              icon="plus"
+            />
+          </Button>
+        </Style_CTAButton>}
+        {Style_BottomBarRight}
+      </Style_BottomBar>
     </Style_Layout01>
   </Style_SafeView>);
 };

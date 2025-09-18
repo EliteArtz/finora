@@ -24,6 +24,7 @@ import { useMMKVString } from 'react-native-mmkv';
 import LoanFunds from '../screens/LoanFunds';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 import Analytics from "../screens/Analytics";
+import { Screens } from "../constants/Screens";
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -46,13 +47,14 @@ const RootStack = createDrawerNavigator({
     Home: {
       screen: Home,
       options: {
+        title: Screens.HOME,
         drawerIcon: ({ focused }) => (<FontAwesomeIcon icon="home" color={focused ? 'primary' : 'textSecondary'} />)
       },
     },
     LoanFunds: {
       screen: LoanFunds,
       options: {
-        title: 'Schulden',
+        title: Screens.LOANFUNDS,
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="hand-holding-dollar" color={focused ? 'primary' : 'textSecondary'} />)
       },
@@ -60,7 +62,7 @@ const RootStack = createDrawerNavigator({
     Analytics: {
       screen: Analytics,
       options: {
-        title: 'Analyse',
+        title: Screens.ANALYTICS,
         lazy: false,
         drawerIcon: ({ focused }) => (
           <FontAwesomeIcon icon="chart-line" color={focused ? 'primary' : 'textSecondary'} />)
@@ -69,7 +71,7 @@ const RootStack = createDrawerNavigator({
     Settings: {
       screen: Settings,
       options: {
-        title: 'Einstellungen',
+        title: Screens.SETTINGS,
         drawerIcon: ({ focused }) => (<FontAwesomeIcon icon="cog" color={focused ? 'primary' : 'textSecondary'} />)
       },
     },

@@ -1,7 +1,6 @@
 import Label from '../components/Label/Label';
 import Layout01 from '../layouts/Layout01';
 import styled, { css } from 'styled-components/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BaseCard from '../components/BaseCard/BaseCard';
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useMMKVObject } from 'react-native-mmkv';
@@ -12,26 +11,11 @@ import RowView from '../components/RowView/RowView';
 import FontAwesomeIcon from '../components/FontAwesomeIcon/FontAwesomeIcon';
 import Pressable from '../components/Pressable/Pressable';
 import Separator from '../components/Separator/Separator';
-import LoanButton from '../components/LoanButton/LoanButton';
 import EditLoanModal from "../modals/EditLoanModal/EditLoanModal";
 import { useIsFocused } from "@react-navigation/native";
-
-const Style_ScrollView = styled.ScrollView.attrs(({ theme }) => {
-  const insets = useSafeAreaInsets();
-  return {
-    contentContainerStyle: {
-      gap: theme.size.l.value * 16,
-      paddingBottom: insets.bottom,
-    }
-  };
-})`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  ${({ theme }) => css`
-    padding-inline: ${theme.size.l.px};
-  `}
-`;
+import AddLoanModal from "../modals/AddLoanModal/AddLoanModal";
+import { Screens } from "../constants/Screens";
+import SafeScrollView from "../components/ScrollView/SafeScrollView";
 
 const Style_ProgressBar = styled(CircularProgressBase)
   .attrs(({ theme }) => ({
@@ -64,21 +48,12 @@ const Style_Check = styled.View`
   `}
 `
 
-const Style_BottomAction = styled.View`
-  width: 100%;
-  position: absolute;
-  flex-direction: row;
-  justify-content: center;
-  ${({ theme }) => css`
-    bottom: ${theme.size.xl.px};
-  `}
-`;
-
 const LoanFunds = () => {
   const isFocused = useIsFocused();
   const [ loans ] = useMMKVObject<Loan[]>('loans');
   const [ loanId, setLoanId ] = useState<Loan['id']>();
   const [ isEditModalVisible, setIsEditModalVisible ] = useState(false);
+  const [ isAddModalVisible, setIsAddModalVisible ] = useState(false);
 
   const onItemPress = (id: string) => {
     setLoanId(id);
@@ -136,15 +111,12 @@ const LoanFunds = () => {
     </BaseCard>);
   }
 
-  return isFocused && (<Layout01>
-    <Style_ScrollView>
-      <Label size="xl" weight="bold">Schulden</Label>
+  return isFocused && (<Layout01 title={Screens.LOANFUNDS} onCTAClick={() => setIsAddModalVisible(true)}>
+    <SafeScrollView>
       {loans?.map(renderItem)}
       <EditLoanModal loanId={loanId} visible={isEditModalVisible} setVisible={setIsEditModalVisible} />
-    </Style_ScrollView>
-    <Style_BottomAction>
-      <LoanButton />
-    </Style_BottomAction>
+      <AddLoanModal isVisible={isAddModalVisible} setIsVisible={setIsAddModalVisible} />
+    </SafeScrollView>
   </Layout01>);
 };
 

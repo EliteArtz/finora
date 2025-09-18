@@ -16,6 +16,7 @@ import { Platform } from 'react-native';
 import { Loan } from "../types/loans.type";
 import ConfirmModal from "../modals/ConfirmModal/ConfirmModal";
 import { useExpenseEventHandler } from "../hooks/useExpenseEventHandler";
+import { Screens } from "../constants/Screens";
 
 const Style_Settings = styled.ScrollView.attrs(({ theme }) => ({
   contentContainerStyle: {
@@ -127,9 +128,8 @@ const Settings = () => {
     await FileSystem.deleteAsync(path)
   }
 
-  return (<Layout01 isSettings>
+  return (<Layout01 title={Screens.SETTINGS}>
     <Style_Settings>
-      <Label size="xl" weight="bold">Einstellungen</Label>
       <RowView>
         <Label><FontAwesomeIcon color="textPrimary" icon="palette" /></Label>
         <Picker

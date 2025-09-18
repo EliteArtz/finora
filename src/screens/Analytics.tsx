@@ -17,8 +17,9 @@ import { useIsFocused } from "@react-navigation/native";
 import Pressable from "../components/Pressable/Pressable";
 import FontAwesomeIcon from "../components/FontAwesomeIcon/FontAwesomeIcon";
 import Presets from "../components/Presets/Presets";
+import { Screens } from "../constants/Screens";
 
-const Style_View = styled.View`
+const Style_GapContainer = styled.View`
   ${({ theme }) => css`
     gap: ${theme.size.s.px};
   `}
@@ -175,11 +176,10 @@ const Analytics = () => {
     </RowView>
   </Pressable>
 
-  return isFocused && <Layout01>
+  return isFocused && <Layout01 title={Screens.ANALYTICS}>
     <SafeScrollView>
-      <Label size="xl" weight="bold">Analyse</Label>
       <BaseCard>
-        <Style_View>
+        <Style_GapContainer>
           <Label size="s" color="textSecondary" align="center">{Intl.DateTimeFormat(undefined, {
             day: '2-digit',
             month: '2-digit'
@@ -256,10 +256,10 @@ const Analytics = () => {
           </RowView>
           <Checkbox isActive={isParentWidth} setIsActive={setIsParentWidth}><Label size="s">Graph
             minimieren</Label></Checkbox>
-        </Style_View>
+        </Style_GapContainer>
       </BaseCard>
       <BaseCard>
-        <Style_View>
+        <Style_GapContainer>
           <Label>Aktueller Stand</Label>
           <RowView justifyContent="space-between">
             <Label size="s" color="textSecondary">Aktueller Saldo</Label>
@@ -294,8 +294,9 @@ const Analytics = () => {
               </RowView>}
             </Pressable>
           </Style_PaddedView>
-        </Style_View>
+        </Style_GapContainer>
       </BaseCard>
+      <View />
     </SafeScrollView>
   </Layout01>
 }

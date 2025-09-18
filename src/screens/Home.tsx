@@ -1,22 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout01 from '../layouts/Layout01';
 import styled, { css } from 'styled-components/native';
 import TotalCard from '../components/TotalCard/TotalCard';
 import ExpensesCard from '../components/ExpensesCard/ExpensesCard';
-import ExpenseButton from '../components/ExpenseButton/ExpenseButton';
 import SavingsCard from "../components/SavingsCard/SavingsCard";
 import SafeScrollView from "../components/ScrollView/SafeScrollView";
-
-
-const Style_BottomAction = styled.View`
-  width: 100%;
-  position: absolute;
-  flex-direction: row;
-  justify-content: center;
-  ${({ theme }) => css`
-    bottom: ${theme.size.xl.px};
-  `}
-`;
+import AddExpenseModal from "../modals/AddExpenseModal/AddExpenseModal";
+import { Screens } from "../constants/Screens";
 
 const Style_CardContainer = styled.View`
   display: flex;
@@ -25,7 +15,13 @@ const Style_CardContainer = styled.View`
   `}
 `;
 const Home = () => {
-  return (<Layout01>
+  const [ isModalVisible, setIsModalVisible ] = useState(false);
+
+  const onPress = () => {
+    setIsModalVisible(true);
+  };
+
+  return (<Layout01 title={Screens.HOME} onCTAClick={onPress}>
     <SafeScrollView>
       <TotalCard />
       <SavingsCard />
@@ -35,10 +31,8 @@ const Home = () => {
       <Style_CardContainer>
         <ExpensesCard type="variable" />
       </Style_CardContainer>
+      <AddExpenseModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} />
     </SafeScrollView>
-    <Style_BottomAction>
-      <ExpenseButton />
-    </Style_BottomAction>
   </Layout01>);
 };
 
